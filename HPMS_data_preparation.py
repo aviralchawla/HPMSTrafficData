@@ -1,6 +1,6 @@
 """
 
-Data Project - Near-Road Exposure
+HPMS Data Project - Near-Road Exposure
 
 Last Updated: 01/17/2023
 Created by Meg Fay
@@ -154,7 +154,7 @@ except Exception as e:
                 sys.exit('Exiting script.')
 
 
-### 5: Intersect HPMs road network with US Census county boundaries
+### 5: Intersect HPMS road network with US Census county boundaries
 try:
     arcpy.analysis.PairwiseIntersect(
         in_features="HPMS_2018_state_sub_proj;US_census_county_2020",
