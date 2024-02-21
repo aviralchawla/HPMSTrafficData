@@ -163,6 +163,8 @@ for file_path in file_paths:
     if not os.path.exists(file_path):
         print(f"ERROR: The file or directory does not exist: {file_path}")
         sys.exit()
+    else: 
+        print(f"File or directory exists: {file_path}")
 
 try: 
     # load input HPMS data
