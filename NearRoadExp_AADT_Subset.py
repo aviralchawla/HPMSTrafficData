@@ -90,7 +90,10 @@ import time
 import datetime
 import sys
 import tigris
+import fiona
 from osgeo import ogr
+import arcpy
+
 
 # print current date and time
 dt = datetime.datetime.now()
@@ -103,28 +106,32 @@ start_time_total = time.time()
 print("Setting local variables...")
 
 # set path of file geodatabase containing input HPMS data:
-hpms_gdb = "//netfiles02.uvm.edu/trc_projects/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
+#hpms_gdb = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
+hpms_gdb = "C:/Users/mrfay/OneDrive - University of Vermont/Documents/LOCAL/HPMS_test.gdb"
 
 # inspect data in input file geodatabase(s)
 # list all feature classes in file geodatabase(s)
 driver = ogr.GetDriverByName('OpenFileGDB')
-dataSource = driver.Open(hpms_gdb, 0)
-fc_list = [dataSource.GetLayerByIndex(i).GetName() for i in range(dataSource.GetLayerCount())]
+ds = driver.Open(hpms_gdb, 0)
+fc_list = [ds.GetLayerByIndex(i).GetName() for i in range(ds.GetLayerCount())]
 print(fc_list)
 
 # set feature class name of input HPMS data:
-hpms_fc = "HPMS_2018_county_intxn"
+hpms_fc = "HPMS_2018_county_intxn.shp"
+hpms_path = os.path.join(hpms_gdb, hpms_fc)
 
 # set path of file geodatabase containing input HPMS census urban area code data:
 # * this data is required to correct urban area codes in the HPMS data *
-hpms_uac_gdb = "//netfiles02.uvm.edu/trc_projects/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
+#hpms_uac_gdb = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
+hpms_uac_gdb = "C:/Users/mrfay/OneDrive - University of Vermont/Documents/LOCAL/HPMS_test.gdb"
 
 # set feature class name of input HPMS:
 # * data should contain road link ID and census urban area code *
-hpms_uac_fc = "HPMS_2018_cnty_uac_join"
+hpms_uac_fc = "HPMS_2018_cnty_uac_join.shp"
+hpms_uac_path = os.path.join(hpms_uac_gdb, hpms_uac_fc)
 
 # set main output directory:
-main_out_dir = "//netfiles02.uvm.edu/trc_projects/ROAD_AQ/HPMS Traffic Data/HPMS/AADT Subset"
+main_out_dir = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/AADT Subset"
 
 # set additional output directories:
 # * the following folders will be created if they do not already exist *
@@ -166,18 +173,35 @@ for file_path in file_paths:
     else: 
         print(f"File or directory exists: {file_path}")
 
-try: 
+# try loading dating using ogr
+#try:
     # load input HPMS data
-    data_hpms = gpd.read_file(hpms_gdb, layer=hpms_fc)
-
+    layer_hpms = ds.GetLayer(hpms_fc)
+    data_hpms = pd.DataFrame([feature.items() for feature in layer_hpms], columns=[field.name for field in layer_hpms.schema])
+    print(len(data_hpms))
+    print("HPMS data loaded")
     # load input HPMS data census urban area codes data
-    data_hpms_uac = gpd.read_file(hpms_uac_gdb, layer=hpms_uac_fc).drop(columns='geometry')
-except Exception as e:
+    layer_hpms_uac = ds.GetLayer(hpms_uac_fc)
+    data_hpms_uac = pd.DataFrame([feature.items() for feature in layer_hpms_uac], columns=[field.name for field in layer_hpms_uac.schema])
+    print(len(data_hpms_uac))
+    print("HPMS census urban area codes data loaded")
+#except Exception as e:
+    print(f"ERROR: An error occurred while loading the data: {e}")
+    print(f"ERROR: The script will terminate.")
+    sys.exit()   
+
+# try loading data using geopandas
+#try: 
+    # load input HPMS data
+    data_hpms = gpd.read_file(hpms_gdb, layer= 'HPMS_2018_county_intxn')
+    print("HPMS data loaded")
+    # load input HPMS data census urban area codes data
+    data_hpms_uac = gpd.read_file(hpms_uac_gdb, layer= 'HPMS_2018_cnty_uac_join').drop(columns='geometry')
+    print("HPMS census urban area codes data loaded")
+#except Exception as e:
     print(f"ERROR: An error occurred while loading the data: {e}")
     print(f"ERROR: The script will terminate.")
     sys.exit()  
-
-print("Data loaded.")
 
 # ----- PREP DATA --------------------------------------------------------------
 print("Preparing data...")
@@ -189,7 +213,8 @@ hpms = hpms[['FID_Link_Cnty_Intxn', 'STATEFP', 'COUNTYFP', 'GEOID', 'F_SYSTEM',
              'THROUGH_LANES', 'URBAN_CODE'] + [col for col in hpms.columns if 'AADT' in col] + ['Shape_Length']]
 
 # Convert spatial data to non-spatial data
-hpms = hpms.drop(columns='geometry')
+#hpms = hpms.drop(columns='geometry')
+#data_hpms_uac = data_hpms_uac.drop(columns='geometry')
 
 # Remove road segments with zero shape length
 hpms = hpms[hpms['Shape_Length'] > 0]
