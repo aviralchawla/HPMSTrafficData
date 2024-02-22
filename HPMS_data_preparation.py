@@ -41,6 +41,7 @@ print('arcpy.env.overwriteOutput', arcpy.env.overwriteOutput,'\n')
 # Set the workspace
 # The default location for geoprocessing tool input and output
 arcpy.env.workspace = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
+#arcpy.env.workspace = "C:/Users/mrfay/OneDrive - University of Vermont/Documents/LOCAL/HPMS_test.gdb"
 
 # List all feature classes in the workspace
 feature_classes = arcpy.ListFeatureClasses()
@@ -164,6 +165,21 @@ try:
         output_type="INPUT"
     )
     print('Intersected HPMS state subset with US census counties.')
+
+except Exception as e:
+                # print error messages
+                print(arcpy.GetMessages())
+                print("ERROR: ")
+                print(e)
+                sys.exit('Exiting script.')
+
+# Calculate new field for road link FID: [FID_Link_Cnty_Intxn]
+try:
+    # create new field
+    inFeatures = "HPMS_2018_county_intxn"
+    fieldName = "FID_Link_Cnty_Intxn"
+    arcpy.management.AddField(inFeatures, fieldName, "LONG")
+    arcpy.management.CalculateField(inFeatures, fieldName, "!FID_HPMS_2018_state_sub_proj!", "PYTHON3")
 
 except Exception as e:
                 # print error messages
