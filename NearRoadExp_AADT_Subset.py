@@ -90,9 +90,10 @@ import time
 import datetime
 import sys
 import tigris
-import fiona
 from osgeo import ogr
-import arcpy
+import pyogrio
+import pyarrow
+import sys
 
 
 # print current date and time
@@ -155,6 +156,9 @@ def my_table_export(df, file_name, out_dir):
     print("* Exported table to the following path:")
     print(file_path)
 
+# FUNCTION: load large file geodatabase
+    
+
 print("Functions defined.")
 
 # ----- LOAD DATA --------------------------------------------------------------
@@ -171,37 +175,21 @@ for file_path in file_paths:
         print(f"ERROR: The file or directory does not exist: {file_path}")
         sys.exit()
     else: 
-        print(f"File or directory exists: {file_path}")
-
-# try loading dating using ogr
-#try:
-    # load input HPMS data
-    layer_hpms = ds.GetLayer(hpms_fc)
-    data_hpms = pd.DataFrame([feature.items() for feature in layer_hpms], columns=[field.name for field in layer_hpms.schema])
-    print(len(data_hpms))
-    print("HPMS data loaded")
-    # load input HPMS data census urban area codes data
-    layer_hpms_uac = ds.GetLayer(hpms_uac_fc)
-    data_hpms_uac = pd.DataFrame([feature.items() for feature in layer_hpms_uac], columns=[field.name for field in layer_hpms_uac.schema])
-    print(len(data_hpms_uac))
-    print("HPMS census urban area codes data loaded")
-#except Exception as e:
-    print(f"ERROR: An error occurred while loading the data: {e}")
-    print(f"ERROR: The script will terminate.")
-    sys.exit()   
+        print(f"File or directory exists: {file_path}") 
 
 # try loading data using geopandas
-#try: 
+try: 
     # load input HPMS data
-    data_hpms = gpd.read_file(hpms_gdb, layer= 'HPMS_2018_county_intxn')
+    data_hpms = gpd.read_file(hpms_gdb, layer='HPMS_2018_county_intxn', engine="pyogrio", use_arrow=True)
+    data_hpms
     print("HPMS data loaded")
     # load input HPMS data census urban area codes data
-    data_hpms_uac = gpd.read_file(hpms_uac_gdb, layer= 'HPMS_2018_cnty_uac_join').drop(columns='geometry')
+    data_hpms_uac = gpd.read_file(hpms_uac_gdb, layer='HPMS_2018_cnty_uac_join', engine="pyogrio", use_arrow=True).drop(columns='geometry')
     print("HPMS census urban area codes data loaded")
-#except Exception as e:
-    print(f"ERROR: An error occurred while loading the data: {e}")
+except Exception as e:
+    print(f"ERROR: The data could not be loaded. {e}")
     print(f"ERROR: The script will terminate.")
-    sys.exit()  
+    sys.exit()
 
 # ----- PREP DATA --------------------------------------------------------------
 print("Preparing data...")
@@ -213,8 +201,7 @@ hpms = hpms[['FID_Link_Cnty_Intxn', 'STATEFP', 'COUNTYFP', 'GEOID', 'F_SYSTEM',
              'THROUGH_LANES', 'URBAN_CODE'] + [col for col in hpms.columns if 'AADT' in col] + ['Shape_Length']]
 
 # Convert spatial data to non-spatial data
-#hpms = hpms.drop(columns='geometry')
-#data_hpms_uac = data_hpms_uac.drop(columns='geometry')
+hpms = hpms.drop(columns='geometry')
 
 # Remove road segments with zero shape length
 hpms = hpms[hpms['Shape_Length'] > 0]
