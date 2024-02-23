@@ -89,7 +89,7 @@ import os
 import time
 import datetime
 import sys
-import tigris
+import us
 from osgeo import ogr
 import pyogrio
 import pyarrow
@@ -107,8 +107,8 @@ start_time_total = time.time()
 print("Setting local variables...")
 
 # set path of file geodatabase containing input HPMS data:
-#hpms_gdb = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
-hpms_gdb = "C:/Users/mrfay/OneDrive - University of Vermont/Documents/LOCAL/HPMS_test.gdb"
+hpms_gdb = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
+#hpms_gdb = "C:/Users/mrfay/OneDrive - University of Vermont/Documents/LOCAL/HPMS_test.gdb"
 
 # inspect data in input file geodatabase(s)
 # list all feature classes in file geodatabase(s)
@@ -123,8 +123,8 @@ hpms_path = os.path.join(hpms_gdb, hpms_fc)
 
 # set path of file geodatabase containing input HPMS census urban area code data:
 # * this data is required to correct urban area codes in the HPMS data *
-#hpms_uac_gdb = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
-hpms_uac_gdb = "C:/Users/mrfay/OneDrive - University of Vermont/Documents/LOCAL/HPMS_test.gdb"
+hpms_uac_gdb = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
+#hpms_uac_gdb = "C:/Users/mrfay/OneDrive - University of Vermont/Documents/LOCAL/HPMS_test.gdb"
 
 # set feature class name of input HPMS:
 # * data should contain road link ID and census urban area code *
@@ -154,10 +154,7 @@ def my_table_export(df, file_name, out_dir):
     
     # print new export message 
     print("* Exported table to the following path:")
-    print(file_path)
-
-# FUNCTION: load large file geodatabase
-    
+    print(file_path) 
 
 print("Functions defined.")
 
@@ -200,9 +197,6 @@ hpms = data_hpms.copy()
 hpms = hpms[['FID_Link_Cnty_Intxn', 'STATEFP', 'COUNTYFP', 'GEOID', 'F_SYSTEM', 
              'THROUGH_LANES', 'URBAN_CODE'] + [col for col in hpms.columns if 'AADT' in col] + ['Shape_Length']]
 
-# Convert spatial data to non-spatial data
-hpms = hpms.drop(columns='geometry')
-
 # Remove road segments with zero shape length
 hpms = hpms[hpms['Shape_Length'] > 0]
 
@@ -226,8 +220,8 @@ hpms['THROUGH_LANES'] = hpms['THROUGH_LANES'].fillna(0).replace(0, 2)
 hpms['LANE_KMS'] = hpms['THROUGH_LANES'] * (hpms['Shape_Length'] / 1000)
 hpms['LANE_MILES'] = hpms['THROUGH_LANES'] * (hpms['Shape_Length'] / 1609.344)
 
-# Replace all 'NaN' exposure values with 'NA'
-hpms = hpms.apply(lambda x: x.replace([pd.np.inf, -pd.np.inf], pd.NA))
+# Replace all 'NaN' exposure values with 'nan'
+hpms = hpms.apply(lambda x: x.replace([np.inf, -np.inf], np.nan))
 
 # Arrange data
 hpms.sort_values(['STATEFP', 'COUNTYFP', 'F_SYSTEM'], inplace=True)
@@ -235,9 +229,8 @@ hpms.sort_values(['STATEFP', 'COUNTYFP', 'F_SYSTEM'], inplace=True)
 # Rename fields
 hpms.rename(columns={'URBAN_CODE': 'ORIG_URBAN_CODE'}, inplace=True)
 
-# Join additional state information from tigris package
-states_info = states(cb=True, year=2020)
-states_info = states_info[['STATEFP', 'NAME']].rename(columns={'NAME': 'STATENAME'})
+# Join additional state information from us package
+states_info = pd.DataFrame([(state.fips, state.name) for state in us.states.STATES], columns=['STATEFP', 'STATENAME'])
 hpms = hpms.merge(states_info, on='STATEFP', how='left')
 
 # Join HPMS census urban area codes
@@ -256,6 +249,7 @@ hpms.drop(['UATYP10', 'UACE10'], axis=1, inplace=True)
   #   1 for urban area: URBAN_CODE not 99999 or 99998
   #   2 for small urban area: URBAN_CODE of 99998 (99998 = 5,000 - 49,000*)
   #   * Population is based on the 2010 Decennial Census.
+hpms['NEW_URBAN_CODE'] = hpms['NEW_URBAN_CODE'].astype(str)
 hpms['URBAN'] = hpms['NEW_URBAN_CODE'].map({'99999': 0, '99998': 2}).fillna(1)
 
 # Set URBAN field as factor
@@ -273,7 +267,8 @@ hpms['URBAN'] = hpms['URBAN'].astype('category')
 # Calculate the percentage of road links that maintained the same urban area  
 # code and were assigned a different urban area code after the above correction  
 # was performed.
-
+hpms['ORIG_URBAN_CODE'] = hpms['ORIG_URBAN_CODE'].astype(str)
+hpms['NEW_URBAN_CODE'] = hpms['NEW_URBAN_CODE'].astype(str)
 hpms['UAC_IS_SAME'] = (hpms['ORIG_URBAN_CODE'] == hpms['NEW_URBAN_CODE']).astype(int)
 
 pcnt_uac_same = len(hpms[hpms['UAC_IS_SAME'] == 1]) / len(hpms) * 100
@@ -283,6 +278,9 @@ summary = pd.DataFrame({
     'pcnt_uac_same': [pcnt_uac_same],
     'pcnt_uac_diff': [pcnt_uac_diff]
 })
+
+#    pcnt_uac_same  pcnt_uac_diff
+#        59.8068        40.1932
 
 print(summary)
 
@@ -297,6 +295,7 @@ print("Inspecting data...")
 # AADT == 0 OR AADT == NA
 sub_aadt_nazero = hpms[(hpms['AADT'] == 0) | (hpms['AADT'].isna())]
 print(f"Number of observations with missing AADT values: {len(sub_aadt_nazero)}")
+# Number of observations with missing AADT values: 340,850
 
 # create subset of data where total AADT values are less than the sum of AADT from medium and heavy duty vehicles 
 # AADT > 0 AND AADT < AADT_HDV + AADT_MDV
@@ -305,11 +304,13 @@ AADT_MDV_temp = hpms['AADT_MDV'].fillna(0)
 
 sub_aadt_neg = hpms[(hpms['AADT'] > 0) & (hpms['AADT'] < (AADT_HDV_temp + AADT_MDV_temp))]
 print(f"Number of observations with AADT < AADT_HDV + AADT_MDV where AADT > 0 : {len(sub_aadt_neg)}")
+# Number of observations with AADT < AADT_HDV + AADT_MDV where AADT > 0 : 497
 
 # create subset where (AADT == 0 OR AADT == NA) OR (AADT > 0 AND AADT < AADT_HDV + AADT_MDV))
 # this represents the total number of observations with AADT errors
 sub_aadt_errors = hpms[hpms['FID_Link_Cnty_Intxn'].isin(sub_aadt_nazero['FID_Link_Cnty_Intxn'].tolist() + sub_aadt_neg['FID_Link_Cnty_Intxn'].tolist())]
 print(f"Number of observations with AADT errors: {len(sub_aadt_errors)}")
+# Number of observations with AADT errors: 341,347
 
 # create subset where there is medium duty AADT but no heavy duty AADT
 # or there is heavy duty AADT but no medium duty AADT
@@ -318,6 +319,7 @@ sub_aadt_1type = hpms[~hpms['FID_Link_Cnty_Intxn'].isin(sub_aadt_errors['FID_Lin
                       (((hpms['AADT_HDV'] > 0) & (hpms['AADT_MDV'].isna() | (hpms['AADT_MDV'] == 0))) |
                        ((hpms['AADT_MDV'] > 0) & (hpms['AADT_HDV'].isna() | (hpms['AADT_HDV'] == 0))))]
 print(f"Number of observations with only one type of truck AADT: {len(sub_aadt_1type)}")
+# Number of observations with only one type of truck AADT: 25548
 
 # create a subset with missing through lane data, but no AADT errors
 sub_aadt_lnnazeroerrorsrm = hpms[~hpms['FID_Link_Cnty_Intxn'].isin(sub_aadt_errors['FID_Link_Cnty_Intxn']) &
@@ -326,6 +328,7 @@ sub_aadt_lnnazeroerrorsrm = hpms[~hpms['FID_Link_Cnty_Intxn'].isin(sub_aadt_erro
                                   (hpms['THROUGH_LANES'] == " ") |
                                   (hpms['THROUGH_LANES'] == 0))]
 print(f"Number of observations with missing through lane data: {len(sub_aadt_lnnazeroerrorsrm)}")
+# Number of observations with missing through lane data: 0
 
 # >>> Calculate descriptive statistics of subsets <<<
 
@@ -336,6 +339,14 @@ summary_sub = pd.DataFrame({
 })
 
 print(summary_sub)
+
+# >>> descriptive statistics results: <<<
+
+# Percentage of road links with "errors": 4.8635 % 
+# Percentage of road links with only one truck category without AADT after 
+#          errors are removed: 0.3640 % 
+# Percentage of road links without the number of through lanes after
+#          errors are removed: 0 % 
 
 print("Data inspected.")
 
@@ -362,6 +373,7 @@ hpms_sub = hpms_sub.apply(lambda col: col.replace([np.nan, np.inf, -np.inf], np.
 # Print the number of rows in the DataFrame
 num_rows = len(hpms_sub)
 print(f"Number of rows in the HPMS subset data: {num_rows}")
+# Number of rows in the HPMS subset data: 6,677,169
 
 print("Errors removed and variables subset.")
 
@@ -424,7 +436,7 @@ summary_lnkm_vkt = grouped.agg(
     sum_vkt_ldv=('VKT_LDV', 'sum'),
     sum_vkt_mdv=('VKT_MDV', 'sum'),
     sum_vkt_hdv=('VKT_HDV', 'sum')
-).reset_index(inplace=True)
+).reset_index()
 
 # Generate summary table of statistics by urban classification
 # URBAN_DESC: urban, rural, small urban
@@ -458,7 +470,7 @@ summary_urban = hpms_sub.groupby('URBAN_DESC').agg(
     lnmi_na_hdv=('LANE_MILES', lambda x: x[hpms_sub['AADT_HDV'].isna()].sum()),
     pcnt_lnkm_na_mdv=('LANE_KMS', lambda x: x[hpms_sub['AADT_MDV'].isna()].sum() / x.sum() * 100),
     pcnt_lnkm_na_hdv=('LANE_KMS', lambda x: x[hpms_sub['AADT_HDV'].isna()].sum() / x.sum() * 100)
-).reset_index(inplace=True)
+).reset_index()
 
 
 # Generate summary table of statistics by road functional classification
@@ -479,7 +491,7 @@ summary_fsys = hpms_sub.groupby('F_SYSTEM').agg(
     lnmi_na_hdv=('LANE_MILES', lambda x: x[hpms_sub['AADT_HDV'].isna()].sum()),
     pcnt_lnkm_na_mdv=('LANE_KMS', lambda x: x[hpms_sub['AADT_MDV'].isna()].sum() / x.sum() * 100),
     pcnt_lnkm_na_hdv=('LANE_KMS', lambda x: x[hpms_sub['AADT_HDV'].isna()].sum() / x.sum() * 100)
-).reset_index(inplace=True)
+).reset_index()
 
 # Generate summary table of statistics by state and road functional classification
 summary_st_fsys = hpms_sub.groupby(['STATEFP', 'F_SYSTEM']).agg(
@@ -499,7 +511,7 @@ summary_st_fsys = hpms_sub.groupby(['STATEFP', 'F_SYSTEM']).agg(
     lnmi_na_hdv=('LANE_MILES', lambda x: x[hpms_sub['AADT_HDV'].isna()].sum()),
     pcnt_lnkm_na_mdv=('LANE_KMS', lambda x: x[hpms_sub['AADT_MDV'].isna()].sum() / x.sum() * 100),
     pcnt_lnkm_na_hdv=('LANE_KMS', lambda x: x[hpms_sub['AADT_HDV'].isna()].sum() / x.sum() * 100)
-).reset_index(inplace=True)
+).reset_index()
 
 print("Summary tables generated for HPMS subset by groups.")
 
