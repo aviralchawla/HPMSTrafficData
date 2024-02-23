@@ -117,19 +117,10 @@ ds = driver.Open(hpms_gdb, 0)
 fc_list = [ds.GetLayerByIndex(i).GetName() for i in range(ds.GetLayerCount())]
 print(fc_list)
 
-# set feature class name of input HPMS data:
-hpms_fc = "HPMS_2018_county_intxn.shp"
-hpms_path = os.path.join(hpms_gdb, hpms_fc)
-
 # set path of file geodatabase containing input HPMS census urban area code data:
 # * this data is required to correct urban area codes in the HPMS data *
 hpms_uac_gdb = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
 #hpms_uac_gdb = "C:/Users/mrfay/OneDrive - University of Vermont/Documents/LOCAL/HPMS_test.gdb"
-
-# set feature class name of input HPMS:
-# * data should contain road link ID and census urban area code *
-hpms_uac_fc = "HPMS_2018_cnty_uac_join.shp"
-hpms_uac_path = os.path.join(hpms_uac_gdb, hpms_uac_fc)
 
 # set main output directory:
 main_out_dir = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/AADT Subset"
