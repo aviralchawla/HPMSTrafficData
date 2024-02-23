@@ -15,6 +15,47 @@ University of Vermont, Burlington, VT
 #                                                                             #
 ############################## ABOUT THIS SCRIPT ##############################
 
+# ----- DETAILS ON DATA ----- 
+
+# DATA: Federal Highway Administration (FHWA) 2018 highway performance monitoring system (HPMS) traffic data
+# Source: Buereau of Transportation Statistics (BTS) National Transportation
+# License: Public Domain, not for sale or resale
+
+# Name: NTAD2019_GDB_HPMS2018_2019_10_21.gdb
+# This data is downloaded in a file geodatabase format and contains the following feature classes:
+# hpms_2018_fsys123_2019_10_21 - HPMS data for functional classes 1, 2, and 3
+# hpms_2018_fsys456_2019_10_21 - HPMS data for functional classes 4, 5, and 6
+# hpms_2018_nhs1_9_2019_10_21 - HPMS data for National Highway System (NHS) functional classes 1-9
+
+# F_SYSTEM - FHWA Functional Classifications
+#       HPMS-defined Federal-Aid System Code & Description:
+#       1	- Interstate
+#       2	- Principal Arterial - Other Freeways and Expressways
+#       3	- Principal Arterial - Other
+#       4	- Minor Arterial
+#       5	- Major Collector
+#       6	- Urban Minor Collector
+#       7 - Local 
+#       Interstate is a Designation. The other functional Classifications 
+#       are more subjective, although, they have division approval. 
+#       (Roff, Thomas FHWA)
+
+# DATA: US Census Bureau 2020 TIGER/Line Shapefiles
+# Source: United States Census Bureau
+# License: Public Domain, not for sale or resale
+
+# Name: 2020 Census County Boundaries
+# This data is downloaded in a shapefile format:
+# tl_2020_us_county.shp - US Census 2020 county boundaries
+
+# Name: 2010 Census Urban Area Boundaries
+# This data is downloaded in a shapefile format:
+# tl_2020_us_uac10.shp - US Census 2010 urban area boundaries
+
+# Note: The census data is downloaded as a shapefile and exported to a feature class in a file geodatabase for compatibility with the arcpy module. 
+
+# ------------------------------------------------------------------------- #
+
 # script title
 print('''
 --- Near-Road Exposure: HPMS File Geodatabase Preparation ---''','\n')
