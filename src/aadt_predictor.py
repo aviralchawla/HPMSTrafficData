@@ -11,10 +11,11 @@ from sklearn.model_selection import cross_validate
 from sklearn.model_selection import GridSearchCV
 
 class AADTPredictor:
-    def __init__(self, data_path, response_vars, random_state = 42, outdir="./"):
+    def __init__(self, data_path, response_var, random_state = 42, outdir="./"):
         self.data_path = data_path
         self.data = None
-        self.response_vars = response_vars
+        self.data_full = None
+        self.response_var = response_var
         self.outdir = outdir
         self.model = None
         self.random_state = random_state
@@ -27,9 +28,11 @@ class AADTPredictor:
         """
         print(f"Loading data from {self.data_path}", flush=True)
         try:
-            self.data = pd.read_csv(self.data_path)
+            self.data_full = pd.read_csv(self.data_path)
+            print(f"Full Data loaded successfully: {self.data_full.shape[0]} rows and {self.data_full.shape[1]} columns.", flush=True)
             self.pre_process_data()
-            print(f"Data loaded successfully: {self.data.shape[0]} rows and {self.data.shape[1]} columns.", flush=True)
+            print(f"Training Data loaded successfully: {self.data.shape[0]} rows and {self.data.shape[1]} columns.", flush=True)
+            
         except Exception as e:
             print(f"ERROR: The data could not be loaded. {e}", flush=True)
 
@@ -37,10 +40,10 @@ class AADTPredictor:
         """
         Set the data types for the columns
         """
-        if self.data is not None:
+        if self.data_full is not None:
             try:
                 print("Pre-processing data...", flush=True)
-                self.data = self.data.astype({
+                self.data_full = self.data_full.astype({
                     'STATEFP': 'str', 
                     'COUNTYFP': 'str', 
                     'GEOID': 'str', 
@@ -48,18 +51,18 @@ class AADTPredictor:
                     'category', 
                     'URBAN': 'category'
                     })
-                self.data["STATEFP"] = self.data["STATEFP"].str.pad(2, side ='left', fillchar = '0')
-                self.data["COUNTYFP"] = self.data["COUNTYFP"].str.pad(3, side ='left', fillchar = '0')
-                self.data["GEOID"] = self.data["GEOID"].str.pad(5, side ='left', fillchar = '0')
+                self.data_full["STATEFP"] = self.data_full["STATEFP"].str.pad(2, side ='left', fillchar = '0')
+                self.data_full["COUNTYFP"] = self.data_full["COUNTYFP"].str.pad(3, side ='left', fillchar = '0')
+                self.data_full["GEOID"] = self.data_full["GEOID"].str.pad(5, side ='left', fillchar = '0')
 
                 # Drop rows with missing response variables
-                self.data.dropna(subset=self.response_vars, inplace=True)
+                self.data = self.data_full.dropna(subset=[self.response_var], inplace=False)
             except Exception as e:
                 print(f"ERROR: The data could not be pre-processed. {e}", flush=True)
         else:
             print("ERROR: The data is empty.", flush=True)
     
-    def split_data(self, response_var, predictor_vars, test_size=0.2, state_fips = None, stratify_by_state = False):
+    def split_data(self, predictor_vars, test_size=0.2, state_fips = None, stratify_by_state = False):
         """
         Split the data into training and testing sets
 
@@ -78,7 +81,7 @@ class AADTPredictor:
             data = self.data
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
             data[predictor_vars], 
-            data[response_var], 
+            data[self.response_var], 
             test_size=test_size,
             random_state=self.random_state,
             shuffle=True,
@@ -109,7 +112,11 @@ class AADTPredictor:
         """
         Train the model
         """
-        self.model.fit(self.X_train, self.y_train)
+        try:
+            self.model.fit(self.X_train, self.y_train)
+            print("Model trained successfully", flush=True)
+        except Exception as e:
+            print(f"ERROR: The model could not be trained. {e}", flush=True)
 
     def test_model(self):
         """
