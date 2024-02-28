@@ -55,12 +55,19 @@ class AADTPredictor:
                 self.data_full["COUNTYFP"] = self.data_full["COUNTYFP"].str.pad(3, side ='left', fillchar = '0')
                 self.data_full["GEOID"] = self.data_full["GEOID"].str.pad(5, side ='left', fillchar = '0')
 
-                # Drop rows with missing response variables
-                self.data = self.data_full.dropna(subset=[self.response_var], inplace=False)
+                self.subset_train_data()
             except Exception as e:
                 print(f"ERROR: The data could not be pre-processed. {e}", flush=True)
         else:
             print("ERROR: The data is empty.", flush=True)
+    
+    def subset_train_data(self):
+        try:
+            # Drop rows with missing response variables
+            self.data = self.data_full.dropna(subset=[self.response_var], inplace=False)
+            print(f"Training Data subsetted successfully with {self.response_var}: {self.data.shape[0]} rows and {self.data.shape[1]} columns.", flush=True)
+        except Exception as e:
+            print(f"ERROR: The data could not be subsetted. {e}", flush=True)
     
     def split_data(self, predictor_vars, test_size=0.2, state_fips = None, stratify_by_state = False):
         """
