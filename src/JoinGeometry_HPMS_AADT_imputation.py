@@ -53,7 +53,7 @@ out_name = "hpms_aadt_imputation"
 arcpy.env.outputCoordinateSystem = arcpy.SpatialReference("USA Contiguous Albers Equal Area Conic USGS")
 
 # set output geodatabase:
-out_gdb = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_Estimation.gdb"
+out_gdb = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb"
 
 
 ########################### DEFINED FUNCTIONS #################################
@@ -76,8 +76,6 @@ def queryBuilder(values_field, values_list):
     return single_string[:-4]
 
 ###############################################################################
-
-
 
 # ----- START OF ANALYSIS ----- # 
 
