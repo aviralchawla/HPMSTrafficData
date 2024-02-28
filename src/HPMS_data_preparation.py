@@ -179,7 +179,7 @@ try:
     inFeatures = "HPMS_2018_county_intxn"
     fieldName = "FID_Link_Cnty_Intxn"
     arcpy.management.AddField(inFeatures, fieldName, "LONG")
-    arcpy.management.CalculateField(inFeatures, fieldName, "!FID_HPMS_2018_state_sub_proj!", "PYTHON3")
+    arcpy.management.CalculateField(inFeatures, fieldName, "!OBJECTID!", "PYTHON3")
     print('Calculated new field for road link FID: [FID_Link_Cnty_Intxn]')
 
 except Exception as e:
