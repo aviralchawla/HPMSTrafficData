@@ -5,6 +5,7 @@ HPMS Data Project - Near-Road Exposure
 Last Updated: 11/06/2023
 Created by Brittany Antonczak
 University of Vermont, Burlington, VT
+
 """
 
 
@@ -14,7 +15,7 @@ University of Vermont, Burlington, VT
 # data by joining HPMS road link AADT estimation results to the HPMS road     #
 # network geodatabase feature class.                                          #                   
 #                                                                             #
-# Approximate script total execution time: ---  minutes --- (01/18/2024)    #
+# Approximate script total execution time: --- 37 minutes --- (02/28/2024)    #
 #                                                                             #
 ############################## ABOUT THIS SCRIPT ##############################
  
