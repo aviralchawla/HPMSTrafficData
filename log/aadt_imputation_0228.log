@@ -2,520 +2,621 @@ Imputing missing AADT values
 Loading data from ../data/hpms_aadt_subset.csv
 Full Data loaded successfully: 6598605 rows and 21 columns.
 Pre-processing data...
-Training Data loaded successfully: 4766630 rows and 21 columns.
+ERROR: The data could not be subsetted. [None]
+ERROR: The data could not be loaded. 'NoneType' object has no attribute 'shape'
 Imputing AADT_MDV for state 01
+Training Data subsetted successfully with AADT_MDV: 4766630 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 01 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 208 missing values for state 01
 Imputing AADT_MDV for state 02
+Training Data subsetted successfully with AADT_MDV: 4766838 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 02 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 2425 missing values for state 02
 Imputing AADT_MDV for state 04
+Training Data subsetted successfully with AADT_MDV: 4769263 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 04 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 6 missing values for state 04
 Imputing AADT_MDV for state 05
+Training Data subsetted successfully with AADT_MDV: 4769269 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 05 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 27456 missing values for state 05
 Imputing AADT_MDV for state 06
+Training Data subsetted successfully with AADT_MDV: 4796725 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 06 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 129675 missing values for state 06
 Imputing AADT_MDV for state 08
+Training Data subsetted successfully with AADT_MDV: 4926400 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 08 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1955 missing values for state 08
 Imputing AADT_MDV for state 09
+Training Data subsetted successfully with AADT_MDV: 4928355 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 09 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 13374 missing values for state 09
 Imputing AADT_MDV for state 10
+Training Data subsetted successfully with AADT_MDV: 4941729 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 10 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 11 missing values for state 10
 Imputing AADT_MDV for state 11
+Training Data subsetted successfully with AADT_MDV: 4941740 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 11 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 3671 missing values for state 11
 Imputing AADT_MDV for state 12
+Training Data subsetted successfully with AADT_MDV: 4945411 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 12 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 60862 missing values for state 12
 Imputing AADT_MDV for state 13
+Training Data subsetted successfully with AADT_MDV: 5006273 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 13 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 9285 missing values for state 13
 Imputing AADT_MDV for state 15
+Training Data subsetted successfully with AADT_MDV: 5015558 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 15 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 ERROR: Could not impute missing values for state 15. Found array with 0 sample(s) (shape=(0, 4)) while a minimum of 1 is required by RandomForestRegressor.
 Imputing AADT_MDV for state 16
+Training Data subsetted successfully with AADT_MDV: 5015558 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 16 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 3957 missing values for state 16
 Imputing AADT_MDV for state 17
+Training Data subsetted successfully with AADT_MDV: 5019515 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 17 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 133504 missing values for state 17
 Imputing AADT_MDV for state 18
+Training Data subsetted successfully with AADT_MDV: 5153019 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 18 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1516 missing values for state 18
 Imputing AADT_MDV for state 19
+Training Data subsetted successfully with AADT_MDV: 5154535 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 19 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 40949 missing values for state 19
 Imputing AADT_MDV for state 20
+Training Data subsetted successfully with AADT_MDV: 5195484 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 20 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 20603 missing values for state 20
 Imputing AADT_MDV for state 21
+Training Data subsetted successfully with AADT_MDV: 5216087 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 21 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1363 missing values for state 21
 Imputing AADT_MDV for state 22
+Training Data subsetted successfully with AADT_MDV: 5217450 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 22 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 83486 missing values for state 22
 Imputing AADT_MDV for state 23
+Training Data subsetted successfully with AADT_MDV: 5300936 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 23 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1250 missing values for state 23
 Imputing AADT_MDV for state 24
+Training Data subsetted successfully with AADT_MDV: 5302186 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 24 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 10470 missing values for state 24
 Imputing AADT_MDV for state 25
+Training Data subsetted successfully with AADT_MDV: 5312656 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 25 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 392 missing values for state 25
 Imputing AADT_MDV for state 26
+Training Data subsetted successfully with AADT_MDV: 5313048 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 26 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 34753 missing values for state 26
 Imputing AADT_MDV for state 27
+Training Data subsetted successfully with AADT_MDV: 5347801 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 27 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 87008 missing values for state 27
 Imputing AADT_MDV for state 28
+Training Data subsetted successfully with AADT_MDV: 5434809 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 28 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 18525 missing values for state 28
 Imputing AADT_MDV for state 29
+Training Data subsetted successfully with AADT_MDV: 5453334 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 29 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 230568 missing values for state 29
 Imputing AADT_MDV for state 30
+Training Data subsetted successfully with AADT_MDV: 5683902 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 30 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 10940 missing values for state 30
 Imputing AADT_MDV for state 31
+Training Data subsetted successfully with AADT_MDV: 5694842 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 31 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 67056 missing values for state 31
 Imputing AADT_MDV for state 32
+Training Data subsetted successfully with AADT_MDV: 5761898 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 32 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 5550 missing values for state 32
 Imputing AADT_MDV for state 33
+Training Data subsetted successfully with AADT_MDV: 5767448 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 33 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 31598 missing values for state 33
 Imputing AADT_MDV for state 34
+Training Data subsetted successfully with AADT_MDV: 5799046 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 34 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 54446 missing values for state 34
 Imputing AADT_MDV for state 35
+Training Data subsetted successfully with AADT_MDV: 5853492 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 35 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 17520 missing values for state 35
 Imputing AADT_MDV for state 36
+Training Data subsetted successfully with AADT_MDV: 5871012 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 36 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 166719 missing values for state 36
 Imputing AADT_MDV for state 37
+Training Data subsetted successfully with AADT_MDV: 6037731 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 37 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 25622 missing values for state 37
 Imputing AADT_MDV for state 38
+Training Data subsetted successfully with AADT_MDV: 6063353 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 38 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 5762 missing values for state 38
 Imputing AADT_MDV for state 39
+Training Data subsetted successfully with AADT_MDV: 6069115 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 39 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 57856 missing values for state 39
 Imputing AADT_MDV for state 40
+Training Data subsetted successfully with AADT_MDV: 6126971 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 40 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 73294 missing values for state 40
 Imputing AADT_MDV for state 41
+Training Data subsetted successfully with AADT_MDV: 6200265 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 41 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 11202 missing values for state 41
 Imputing AADT_MDV for state 42
+Training Data subsetted successfully with AADT_MDV: 6211467 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 42 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 20201 missing values for state 42
 Imputing AADT_MDV for state 44
+Training Data subsetted successfully with AADT_MDV: 6231668 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 44 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 6811 missing values for state 44
 Imputing AADT_MDV for state 45
+Training Data subsetted successfully with AADT_MDV: 6238479 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 45 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 19723 missing values for state 45
 Imputing AADT_MDV for state 46
+Training Data subsetted successfully with AADT_MDV: 6258202 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 46 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 9574 missing values for state 46
 Imputing AADT_MDV for state 47
+Training Data subsetted successfully with AADT_MDV: 6267776 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 47 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 2030 missing values for state 47
 Imputing AADT_MDV for state 48
+Training Data subsetted successfully with AADT_MDV: 6269806 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 48 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 105792 missing values for state 48
 Imputing AADT_MDV for state 49
+Training Data subsetted successfully with AADT_MDV: 6375598 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 49 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1644 missing values for state 49
 Imputing AADT_MDV for state 50
+Training Data subsetted successfully with AADT_MDV: 6377242 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 50 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 31395 missing values for state 50
 Imputing AADT_MDV for state 51
+Training Data subsetted successfully with AADT_MDV: 6408637 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 51 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 6282 missing values for state 51
 Imputing AADT_MDV for state 53
+Training Data subsetted successfully with AADT_MDV: 6414919 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 53 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 21240 missing values for state 53
 Imputing AADT_MDV for state 54
+Training Data subsetted successfully with AADT_MDV: 6436159 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 54 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 65793 missing values for state 54
 Imputing AADT_MDV for state 55
+Training Data subsetted successfully with AADT_MDV: 6501952 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 55 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 81209 missing values for state 55
 Imputing AADT_MDV for state 56
+Training Data subsetted successfully with AADT_MDV: 6583161 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 56 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 15444 missing values for state 56
-Loading data from ../data/hpms_aadt_subset.csv
-Full Data loaded successfully: 6598605 rows and 21 columns.
-Pre-processing data...
-Training Data loaded successfully: 4766451 rows and 21 columns.
 Imputing AADT_HDV for state 01
+Training Data subsetted successfully with AADT_HDV: 4766451 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 01 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 278 missing values for state 01
 Imputing AADT_HDV for state 02
+Training Data subsetted successfully with AADT_HDV: 4766729 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 02 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 2425 missing values for state 02
 Imputing AADT_HDV for state 04
+Training Data subsetted successfully with AADT_HDV: 4769154 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 04 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 6 missing values for state 04
 Imputing AADT_HDV for state 05
+Training Data subsetted successfully with AADT_HDV: 4769160 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 05 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 27456 missing values for state 05
 Imputing AADT_HDV for state 06
+Training Data subsetted successfully with AADT_HDV: 4796616 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 06 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 129582 missing values for state 06
 Imputing AADT_HDV for state 08
+Training Data subsetted successfully with AADT_HDV: 4926198 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 08 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1955 missing values for state 08
 Imputing AADT_HDV for state 09
+Training Data subsetted successfully with AADT_HDV: 4928153 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 09 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 13374 missing values for state 09
 Imputing AADT_HDV for state 10
+Training Data subsetted successfully with AADT_HDV: 4941527 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 10 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 11 missing values for state 10
 Imputing AADT_HDV for state 11
+Training Data subsetted successfully with AADT_HDV: 4941538 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 11 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 3680 missing values for state 11
 Imputing AADT_HDV for state 12
+Training Data subsetted successfully with AADT_HDV: 4945218 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 12 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 60862 missing values for state 12
 Imputing AADT_HDV for state 13
+Training Data subsetted successfully with AADT_HDV: 5006080 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 13 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 9401 missing values for state 13
 Imputing AADT_HDV for state 15
+Training Data subsetted successfully with AADT_HDV: 5015481 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 15 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 ERROR: Could not impute missing values for state 15. Found array with 0 sample(s) (shape=(0, 4)) while a minimum of 1 is required by RandomForestRegressor.
 Imputing AADT_HDV for state 16
+Training Data subsetted successfully with AADT_HDV: 5015481 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 16 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 3957 missing values for state 16
 Imputing AADT_HDV for state 17
+Training Data subsetted successfully with AADT_HDV: 5019438 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 17 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 133543 missing values for state 17
 Imputing AADT_HDV for state 18
+Training Data subsetted successfully with AADT_HDV: 5152981 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 18 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1418 missing values for state 18
 Imputing AADT_HDV for state 19
+Training Data subsetted successfully with AADT_HDV: 5154399 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 19 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 40953 missing values for state 19
 Imputing AADT_HDV for state 20
+Training Data subsetted successfully with AADT_HDV: 5195352 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 20 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 20603 missing values for state 20
 Imputing AADT_HDV for state 21
+Training Data subsetted successfully with AADT_HDV: 5215955 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 21 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1363 missing values for state 21
 Imputing AADT_HDV for state 22
+Training Data subsetted successfully with AADT_HDV: 5217318 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 22 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 83486 missing values for state 22
 Imputing AADT_HDV for state 23
+Training Data subsetted successfully with AADT_HDV: 5300804 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 23 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1250 missing values for state 23
 Imputing AADT_HDV for state 24
+Training Data subsetted successfully with AADT_HDV: 5302054 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 24 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 10470 missing values for state 24
 Imputing AADT_HDV for state 25
+Training Data subsetted successfully with AADT_HDV: 5312524 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 25 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 392 missing values for state 25
 Imputing AADT_HDV for state 26
+Training Data subsetted successfully with AADT_HDV: 5312916 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 26 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 34753 missing values for state 26
 Imputing AADT_HDV for state 27
+Training Data subsetted successfully with AADT_HDV: 5347669 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 27 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 87035 missing values for state 27
 Imputing AADT_HDV for state 28
+Training Data subsetted successfully with AADT_HDV: 5434704 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 28 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 18525 missing values for state 28
 Imputing AADT_HDV for state 29
+Training Data subsetted successfully with AADT_HDV: 5453229 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 29 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 230568 missing values for state 29
 Imputing AADT_HDV for state 30
+Training Data subsetted successfully with AADT_HDV: 5683797 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 30 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 10940 missing values for state 30
 Imputing AADT_HDV for state 31
+Training Data subsetted successfully with AADT_HDV: 5694737 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 31 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 67056 missing values for state 31
 Imputing AADT_HDV for state 32
+Training Data subsetted successfully with AADT_HDV: 5761793 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 32 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 5531 missing values for state 32
 Imputing AADT_HDV for state 33
+Training Data subsetted successfully with AADT_HDV: 5767324 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 33 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 31598 missing values for state 33
 Imputing AADT_HDV for state 34
+Training Data subsetted successfully with AADT_HDV: 5798922 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 34 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 54446 missing values for state 34
 Imputing AADT_HDV for state 35
+Training Data subsetted successfully with AADT_HDV: 5853368 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 35 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 17520 missing values for state 35
 Imputing AADT_HDV for state 36
+Training Data subsetted successfully with AADT_HDV: 5870888 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 36 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 166719 missing values for state 36
 Imputing AADT_HDV for state 37
+Training Data subsetted successfully with AADT_HDV: 6037607 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 37 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 25622 missing values for state 37
 Imputing AADT_HDV for state 38
+Training Data subsetted successfully with AADT_HDV: 6063229 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 38 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 5762 missing values for state 38
 Imputing AADT_HDV for state 39
+Training Data subsetted successfully with AADT_HDV: 6068991 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 39 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 57984 missing values for state 39
 Imputing AADT_HDV for state 40
+Training Data subsetted successfully with AADT_HDV: 6126975 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 40 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 73294 missing values for state 40
 Imputing AADT_HDV for state 41
+Training Data subsetted successfully with AADT_HDV: 6200269 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 41 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 11202 missing values for state 41
 Imputing AADT_HDV for state 42
+Training Data subsetted successfully with AADT_HDV: 6211471 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 42 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 20202 missing values for state 42
 Imputing AADT_HDV for state 44
+Training Data subsetted successfully with AADT_HDV: 6231673 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 44 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 6811 missing values for state 44
 Imputing AADT_HDV for state 45
+Training Data subsetted successfully with AADT_HDV: 6238484 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 45 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 19723 missing values for state 45
 Imputing AADT_HDV for state 46
+Training Data subsetted successfully with AADT_HDV: 6258207 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 46 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 9574 missing values for state 46
 Imputing AADT_HDV for state 47
+Training Data subsetted successfully with AADT_HDV: 6267781 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 47 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 2030 missing values for state 47
 Imputing AADT_HDV for state 48
+Training Data subsetted successfully with AADT_HDV: 6269811 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 48 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 105792 missing values for state 48
 Imputing AADT_HDV for state 49
+Training Data subsetted successfully with AADT_HDV: 6375603 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 49 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 1644 missing values for state 49
 Imputing AADT_HDV for state 50
+Training Data subsetted successfully with AADT_HDV: 6377247 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 50 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 31395 missing values for state 50
 Imputing AADT_HDV for state 51
+Training Data subsetted successfully with AADT_HDV: 6408642 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 51 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 6277 missing values for state 51
 Imputing AADT_HDV for state 53
+Training Data subsetted successfully with AADT_HDV: 6414919 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 53 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 21240 missing values for state 53
 Imputing AADT_HDV for state 54
+Training Data subsetted successfully with AADT_HDV: 6436159 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 54 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 65793 missing values for state 54
 Imputing AADT_HDV for state 55
+Training Data subsetted successfully with AADT_HDV: 6501952 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 55 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 81209 missing values for state 55
 Imputing AADT_HDV for state 56
+Training Data subsetted successfully with AADT_HDV: 6583161 rows and 21 columns.
 Training and testing data split with test size 1e-10 on State 56 and not stratified ...
 Random Forest model initialized with- {}
 Model trained successfully
 Imputed 15444 missing values for state 56
+Empty AADT_MDV: 0
+Empty AADT_HDV: 0
 Imputation completed
-Time taken: 894.2960574626923 seconds
+Time taken: 925.6082198619843 seconds
