@@ -24,11 +24,16 @@ for response_var in RESPONSE_VARS:
         predictor.fit_model()
         missing_data = predictor.data_full[(predictor.data_full.STATEFP == state) & (predictor.data_full[response_var].isna())]
         try:
+            predictor.data_full.loc[missing_data.index, response_var] = predictor.model.predict(missing_data[RF_PREDICTOR_VARS])
             print(f"Imputed {missing_data.shape[0]} missing values for state {state}", flush=True)
         except Exception as e:
             print(f"ERROR: Could not impute missing values for state {state}. {e}", flush=True)
 
-predictor.data_full.to_csv(f"{OUTDIR}/hpms_aadt_subset_imputed.csv", index=False)
+# print count of empty AADT_MDV and AADT_HDV values
+print(f"Empty AADT_MDV: {predictor.data_full[predictor.data_full.AADT_MDV.isna()].shape[0]}", flush=True)
+print(f"Empty AADT_HDV: {predictor.data_full[predictor.data_full.AADT_HDV.isna()].shape[0]}", flush=True)
+
+predictor.data_full.to_csv(f"{OUTDIR}/hpms_aadt_imputed.csv", index=False)
 
 print("Imputation completed", flush=True)
 print(f"Time taken: {time.time() - start} seconds", flush=True)
