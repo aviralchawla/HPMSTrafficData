@@ -2,8 +2,8 @@
 
 HPMS Data Project - Near-Road Exposure
 
-Last Updated: 11/06/2023
-Created by Brittany Antonczak
+Last Updated: 03/19/2024
+Created by Brittany Antonczak and Meg Fay
 University of Vermont, Burlington, VT
 
 """
@@ -102,7 +102,6 @@ start_time_total = time.time()
 #      >> arcpy.JoinField_JoinField() *imported toolbox
 
 ###############################################################################
-
 
 
 ###############################################################################
