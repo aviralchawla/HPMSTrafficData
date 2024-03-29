@@ -41,7 +41,7 @@ print('arcpy.env.overwriteOutput', arcpy.env.overwriteOutput,'\n')
 # HPMS road network feature class:
 geo_in_path = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/HPMS_test.gdb/HPMS_2018_county_intxn"
 # HPMS road link AADT estimation results table:
-tab_in_path = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/Imputed AADT/hpms_aadt_imputed.csv"
+tab_in_path = "Z:/ROAD_AQ/HPMS Traffic Data/HPMS/Imputed AADT/hpms_aadt_imputed_new.csv"
 
 # set join field 
 geo_join_field = "FID_Link_Cnty_Intxn"
