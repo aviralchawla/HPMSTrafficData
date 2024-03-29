@@ -1,4 +1,2 @@
-*.gdb
-*.csv
 *.pkl
 src/__pycache__
