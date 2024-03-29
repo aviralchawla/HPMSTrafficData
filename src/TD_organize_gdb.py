@@ -2,7 +2,7 @@
 
 HPMS Data Project - Near-Road Exposure
 
-Last Updated: 02/21/2023
+Last Updated: 03/29/2024
 Created by Meg Fay
 University of Vermont, Burlington, VT
 
@@ -10,8 +10,8 @@ University of Vermont, Burlington, VT
 
 ############################## ABOUT THIS SCRIPT ##############################
 #                                                                             #
-# This script copies the raw HPMS and Census feature classes to a single      #
-# geodatabase for cleaning the HPMS data.                                     #
+# This script copies the inputed HPMS and Census feature class to a single    #
+# geodatabase for preparing the data for traffic density.                     #
 #                                                                             #
 ############################## ABOUT THIS SCRIPT ##############################
 
@@ -106,15 +106,12 @@ TD_target_gdb = os.path.join(gdb_folder_path, gdb_name)
 # Set the workspace to the traffic density geodatabase
 arcpy.env.workspace = TD_target_gdb     
 
-# --- END SCRIPT UNTIL HPMS IS COMPLETE ---
-sys.exit()
-
 # >>> Copy HPMS feature classes to the new geodatabase <<<
 
 print("Copying HPMS data to geodatabase...")
 
 # Feature class names in the source and target geodatabases
-fc_HPMS = "NAME TBD"
+fc_HPMS = "HPMS_2018_vmt"
 
 # Copy the feature classes
 try:
