@@ -125,12 +125,11 @@ except Exception as e:
 print("Copying Census data to geodatabase...")
 
 # Feature class names in the source and target geodatabases
-fc_block = "tl_2020_us_county"
-fc_block_new = "US_census_block_2020"
+fc_block = "US_census_block_2020"
 
 # Copy the feature classes
 try:
-    arcpy.Copy_management(f"{block_source_gdb}\\{fc_block}", f"{TD_target_gdb}\\{fc_block_new}")
+    arcpy.Copy_management(f"{block_source_gdb}\\{fc_block}", f"{TD_target_gdb}\\{fc_block}")
     print("Census block data copied to geodatabase.")
 except Exception as e:
     print(f"ERROR: The feature classes could not be copied. {e}")

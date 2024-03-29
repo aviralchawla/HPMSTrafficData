@@ -18,7 +18,7 @@ University of Vermont, Burlington, VT
 
 # script title
 print('''
---- Near-Road Exposure: Traffic Density File Geodatabase Preparation ---''','\n')
+--- Near-Road Exposure: Traffic Density Block Intersection Data Preparation ---''','\n')
 
 # import packages 
 import arcpy
