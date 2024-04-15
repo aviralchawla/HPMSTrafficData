@@ -10,6 +10,12 @@ from pathlib import Path
 import tqdm
 
 def download_file(url, storage_dir):
+    '''
+    Summary: Download file from the given URL and save it to the storage directory
+    Inputs: 
+        - url (str): URL of the file to download 
+        - storage_dir (str): Path to save the downloaded file
+    '''
     try:
         res = requests.get(url, stream=True, verify=False)
         res.raise_for_status()
@@ -21,19 +27,32 @@ def download_file(url, storage_dir):
         f.write(res.content)
 
 def unzip_file(file, storage_dir):
+    '''
+    Summary: Extract the contents of the zip file to the storage directory
+    Inputs:
+        - file (str): Name of the zip file to extract
+        - storage_dir (str): Path to save the extracted files
+    '''
     with zipfile.ZipFile(storage_dir / file, 'r') as zip_ref:
         zip_ref.extractall(storage_dir / file.split('.')[0])
     os.remove(storage_dir / file)
 
-def download_census_data(year, storage_dir):
-    tiger_url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TABBLOCK/"
+def download_census_blocks_data(year, storage_dir):
+    '''
+    Summary: Download the Census Blocks data for the given year
+    Inputs:
+        - year (int): Year of the Census Blocks data
+        - storage_dir (str): Path to save the downloaded files
+    '''
+
+    tiger_blocks_url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TABBLOCK/"
     
-    HPMS_STORAGE_DIR = storage_dir / 'census'
-    if not HPMS_STORAGE_DIR.exists():
-        HPMS_STORAGE_DIR.mkdir(parents=True)
+    CENSUS_BLOCKS_STORAGE_DIR = storage_dir / 'census'
+    if not CENSUS_BLOCKS_STORAGE_DIR.exists():
+        CENSUS_BLOCKS_STORAGE_DIR.mkdir(parents=True)
 
     try:
-        res = requests.get(tiger_url)
+        res = requests.get(tiger_blocks_url)
         res.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Error occurred during HTTP request: {e}")
@@ -49,8 +68,8 @@ def download_census_data(year, storage_dir):
     print("Downloading Census Data")
 
     for state in tqdm.tqdm(census_data):
-        data_url = f"{tiger_url}{state}"
-        download_file(data_url, HPMS_STORAGE_DIR / state)
+        data_url = f"{tiger_blocks_url}{state}"
+        download_file(data_url, CENSUS_BLOCKS_STORAGE_DIR / state)
 
     print("Download complete")
 
@@ -61,6 +80,9 @@ def download_census_data(year, storage_dir):
         unzip_file(file, storage_dir / 'census')
 
 def download_hpms_data(storage_dir):
+    '''
+    
+    '''
     hpms_hosted_url = "https://trafficexposure.uvm.edu/download-hpms"
 
     print('Downloading HPMS Data')
