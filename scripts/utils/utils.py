@@ -4,6 +4,7 @@ import sys
 import zipfile
 import fiona
 import os
+import geopandas as gpd
 
 def download_file(url: str, storage_dir: Path):
     '''
@@ -33,18 +34,27 @@ def unzip_file(file: str, storage_dir: Path):
         zip_ref.extractall(storage_dir / file.split('.')[0])
     os.remove(storage_dir / file)
 
-def shapefile_to_geodatabase(shapefile: Path, geodatabase: Path, layer: str):
+def shp_to_gdb(input_shp: Path, output_gdb: Path, layer_name: str):
     '''
-    Summary: Convert the shapefile to a geodatabase
+    Summary: Convert shapefile to file geodatabase
     Inputs:
-        - shapefile (Path): Path to the shapefile
-        - geodatabase (Path): Path to save the geodatabase
-        - layer (str): Name of the layer in the geodatabase
+        - input_shp (Path): Path to the shapefile
+        - output_gdb (Path): Path to the output file geodatabase
+        - layer_name (str): Name of the layer in the file geodatabase
+    Output:
+        - File geodatabase with the converted shapefile
     '''
-    with fiona.open(shapefile) as source:
-        crs = source.crs
-        schema = source.schema
+    layer = gpd.read_file(input_shp)
+    layer.to_file(output_gdb, layer=layer_name, driver='OpenFileGDB')
+
+def get_state_fips(blocks_dir: Path):
+    '''
+    Summary: Get the state FIPS codes from the directory names
+    Inputs:
+        - blocks_dir (Path): Path to the directory containing the Census Blocks data
+    '''
     
-    with fiona.open(geodatabase, 'w', driver='OpenFileGDB', crs=crs, schema=schema, layer=layer) as sink:
-        for feature in fiona.open(shapefile):
-            sink.write(feature)
+    all_dirs = os.listdir(blocks_dir)
+    state_fips = [f.split('_')[2] for f in all_dirs]
+
+    return state_fips
