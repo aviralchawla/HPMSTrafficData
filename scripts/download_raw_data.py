@@ -127,7 +127,7 @@ def verify_download(dir: str):
     Inputs:
         - checksums_path (Path): Path to the checksums file
     '''
-    checksums_path = Path('../data' / f'checksums_{dir}.json')
+    checksums_path = Path(f'../data/checksums_{dir}.json')
 
     with open(checksums_path, 'r') as f:
         checksums = json.load(f)
@@ -164,7 +164,7 @@ def main():
     download_census_blocks_data(SHAPEFILE_YEAR, TIGER_URL, STORAGE_DIR)
 
     # Verify the downloaded files
-    for dir in ['hpms', 'census_counties', 'census_urban_areas', 'census_blocks']:
+    for dir in ['ntad_2019_hpms_raw', 'counties', 'urban_areas', 'blocks']:
         verify_download(dir)
 
 
