@@ -13,7 +13,10 @@ import sys
 from bs4 import BeautifulSoup
 from pathlib import Path
 import tqdm
+import json
+
 from utils.utils import *
+from utils.generate_checksums import generate_checksums, get_all_files
 from urllib3.exceptions import InsecureRequestWarning
 
 # Suppress SSL warnings
@@ -118,15 +121,23 @@ def download_census_blocks_data(year: int, tiger_url:str, storage_dir: Path):
 
     print(f"Census Blocks Data downloaded and saved to {census_blocks_storage_dir}")
 
-
-def compile_hpms_geodatabase(storage_dir: Path, inputs: list):
+def verify_download(dir: str):
     '''
-    Summary: Compile the HPMS data in a geodatabase
+    Summary: Verify the checksums of the downloaded files
     Inputs:
-        - storage_dir (Path): Path to save the geodatabase
-        - inputs (list): List of input files to compile
+        - checksums_path (Path): Path to the checksums file
     '''
-    pass
+    checksums_path = Path('../data' / f'checksums_{dir}.json')
+
+    with open(checksums_path, 'r') as f:
+        checksums = json.load(f)
+
+    for file, checksum in tqdm.tqdm(checksums.items()):
+        if generate_checksums(file) != checksum:
+            print(f"Checksums do not match for {file}")
+        else:
+            print(f'{dir}: Ok')
+
 
 def main():
 
@@ -152,10 +163,9 @@ def main():
     # Download Census Blocks Data
     download_census_blocks_data(SHAPEFILE_YEAR, TIGER_URL, STORAGE_DIR)
 
-    # Compile HPMS.gdb (Comprises of HPMS data, Census Counties, and Census Urban Areas)
-    #compile_hpms_geodatabase(STORAGE_DIR, inputs=[hpms_filename, f'tl_{SHAPEFILE_YEAR}_us_county.zip', f'tl_{SHAPEFILE_YEAR}_us_uac10.zip'])
-
-    # Compile Counties and Urban Areas in Geodatabase
+    # Verify the downloaded files
+    for dir in ['hpms', 'census_counties', 'census_urban_areas', 'census_blocks']:
+        verify_download(dir)
 
 
 if __name__ == "__main__":
