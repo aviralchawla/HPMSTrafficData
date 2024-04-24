@@ -18,7 +18,7 @@ try:
 except:
     import geopandas as gpd
     import fiona
-    from utils.utilts import shp_to_gdb, get_state_fips
+    from utils.utils import shp_to_gdb, get_state_fips
     from shapely.validation import make_valid
     ARCPY = False
     print('ArcPy is not available. Data will be processed differently')
@@ -45,8 +45,6 @@ class HPMSDataPreparation:
         self.td_gdb = self.td_dir / "Traffic_Density.gdb"
 
 class NoArcpy_HPMSDataPreparation(HPMSDataPreparation):
-    def __init__(self):
-        self.hpms_loaded = None
 
     def copy_raw_hpms(self, hpms_raw_gdb: Path):
         '''
@@ -71,7 +69,7 @@ class NoArcpy_HPMSDataPreparation(HPMSDataPreparation):
         # save the loaded HPMS data to avoid reloading
         self.hpms_loaded = hpms
     
-    def copy_raw_census(self, census_shp: Path):
+    def copy_raw_census_counties(self, census_shp: Path):
         '''
         Summary: Copy raw Census data to HPMS file geodatabase in processed data dir
         Inputs:
@@ -226,7 +224,7 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
         arcpy.Copy_management(f"{hpms_raw_gdb}\\{fc_123}", f"{hpms_raw_gdb}\\{fc_123}")
         arcpy.Copy_management(f"{hpms_raw_gdb}\\{fc_456}", f"{hpms_raw_gdb}\\{fc_456}")
     
-    def copy_raw_census(self, census_shp: Path):
+    def copy_raw_census_counties(self, census_shp: Path):
         '''
         Summary: Copy raw Census data to HPMS file geodatabase in processed data dir using ArcPy
         Inputs:
@@ -404,9 +402,9 @@ def main():
     else:
         DataPrep = NoArcpy_HPMSDataPreparation(STORAGE_DIR)
     
-    DataPrep.copy_raw_hpms(Path("../data/raw_data/HPMS/HPMS_2018.gdb"))
-    DataPrep.copy_raw_census(Path("../data/raw_data/census/US_county_2020.shp"))
-    DataPrep.copy_raw_census_urban(Path("../data/raw_data/census/US_uac_2010.shp"))
+    DataPrep.copy_raw_hpms(Path("../data/raw_data/ntad_2019_hpms_raw/NTAD2019_GDB_HPMS2018_2019_10_21.gdb"))
+    DataPrep.copy_raw_census_counties(Path("../data/raw_data/census/counties/tl_2020_us_county/tl_2020_us_county.shp"))
+    DataPrep.copy_raw_census_urban(Path("../data/raw_data/census/urban_areas/tl_2020_us_uac10/tl_2020_us_uac10.shp"))
     DataPrep.copy_raw_census_blocks(Path("../data/raw_data/census/blocks"))
 
     DataPrep.merge_hpms_data()
