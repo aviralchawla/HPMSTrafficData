@@ -115,6 +115,7 @@ def download_census_blocks_data(year: int, tiger_url:str, storage_dir: Path):
         data_url = f"{tiger_blocks_url}{state}"
         download_file(data_url, census_blocks_storage_dir / state)
 
+    print('Unzipping files ...')
     # Unzip and delete .zip files
     for file in tqdm.tqdm(os.listdir(census_blocks_storage_dir)):
         unzip_file(file, census_blocks_storage_dir)
@@ -135,8 +136,14 @@ def verify_download(dir: str):
     for file, checksum in tqdm.tqdm(checksums.items()):
         if generate_checksums(file) != checksum:
             print(f"Checksums do not match for {file}")
+            file_ok = False
+
+            break
         else:
-            print(f'{dir}: Ok')
+            file_ok = True
+    
+    if file_ok:
+        print(f"{dir}: Ok")
 
 
 def main():
@@ -159,6 +166,7 @@ def main():
 
     download_census_blocks_data(SHAPEFILE_YEAR, TIGER_URL, STORAGE_DIR)
 
+    print('Verifying downloaded files ...')
     # Verify the downloaded files
     for dir in ['ntad_2019_hpms_raw', 'counties', 'urban_areas', 'blocks']:
         verify_download(dir)
