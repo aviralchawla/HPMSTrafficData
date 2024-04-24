@@ -13,10 +13,13 @@ Summary: This script
 try:
     import arcpy
     ARCPY = True
+    arcpy.env.overwriteOutput = True
+    print('arcpy.env.overwriteOutput', arcpy.env.overwriteOutput,'\n')
 except:
     import geopandas as gpd
     import fiona
     from utils.utilts import shp_to_gdb, get_state_fips
+    from shapely.validation import make_valid
     ARCPY = False
     print('ArcPy is not available. Data will be processed differently')
 
@@ -26,6 +29,7 @@ from pathlib import Path
 import tqdm
 
 class HPMSDataPreparation:
+
     def __init__(self, storage_dir: Path):
         self.storage_dir = storage_dir
         if not storage_dir.exists():
@@ -40,13 +44,15 @@ class HPMSDataPreparation:
         self.hpms_gdb = self.hpms_dir / "HPMS.gdb"
         self.td_gdb = self.td_dir / "Traffic_Density.gdb"
 
+class NoArcpy_HPMSDataPreparation(HPMSDataPreparation):
+    def __init__(self):
+        self.hpms_loaded = None
+
     def copy_raw_hpms(self, hpms_raw_gdb: Path):
         '''
         Summary: Copy raw HPMS data to HPMS file geodatabase in processed data dir
         Inputs:
             - hpms_raw_gdb (Path): Path to the raw HPMS data
-        Outputs:
-            - hpms (dict): Dictionary of HPMS data layers
         '''
 
         print("Copying raw HPMS data to HPMS file geodatabase...")
@@ -59,55 +65,128 @@ class HPMSDataPreparation:
 
         for layer in tqdm.tqdm(hpms_raw_layers):
             if 'fsys' in layer:
-                hpms[layer] = gpd.read_file(hpms_raw_gdb, layer=layer)
+                hpms[layer] = gpd.read_file(hpms_raw_gdb, layer=layer, engine="pyogrio", use_arrow=True)
                 hpms[layer].to_file(self.hpms_gdb, layer=layer, driver='OpenFileGDB')
         
-        return hpms
+        # save the loaded HPMS data to avoid reloading
+        self.hpms_loaded = hpms
     
     def copy_raw_census(self, census_shp: Path):
-        pass
+        '''
+        Summary: Copy raw Census data to HPMS file geodatabase in processed data dir
+        Inputs:
+            - census_shp (Path): Path to the raw Census shapefile
+        '''
+        print("Copying raw Census data to HPMS file geodatabase...")
+
+        shp_to_gdb(census_shp, self.hpms_gdb, 'US_census_county_2020')
 
     def copy_raw_census_urban(self, urban_areas_shp: Path):
-        pass
+        '''
+        Summary: Copy raw Census urban area data to HPMS file geodatabase in processed data dir
+        Inputs:
+            - urban_areas_shp (Path): Path to the raw Census urban area shapefile
+        '''
+        print("Copying raw Census urban area data to HPMS file geodatabase...")
+
+        shp_to_gdb(urban_areas_shp, self.hpms_gdb, 'US_census_uac_2010')
 
     def copy_raw_census_blocks(self, blocks_dir: Path):
-        pass
+        '''
+        Summary: Copy raw Census blocks data to Traffic Density file geodatabase in processed data dir
+        Input: 
+            - blocks_dir (Path): Path to the raw Census blocks data
+        '''
+        print("Copying raw Census blocks data to Traffic Density file geodatabase...")
+
+        state_fips_codes = get_state_fips(blocks_dir)
+        base_file_path = "../data/raw_data/census/blocks/tl_2020_{}_tabblock10/tl_2020_{}_tabblock10.shp"
+
+        for fips in tqdm.tqdm(state_fips_codes):
+            blocks_shp = base_file_path.format(fips, fips)
+            shp_to_gdb(blocks_shp, self.td_gdb, f'tl_2020_{fips}_tabblock10')
 
     def merge_hpms_data(self):
-        pass
+        '''
+        Summmary: Merge the HPMS data from the two feature classes into a single feature class
+        '''
+        print("Merging HPMS data...")
+
+        hpms = self.hpms_loaded
+
+        layers = list(hpms.keys())
+        hpms_merged = gpd.GeoDataFrame()
+
+        for layer in layers:
+            hpms_merged = hpms_merged.append(hpms[layer])
+        
+        hpms_merged.to_file(self.hpms_gdb, layer='HPMS_2018_123456', driver='OpenFileGDB')
+
+        self.hpms_loaded = hpms_merged
+
 
     def repair_hpms_geometry(self):
-        pass
+        '''
+        Summary: Repair geometry of HPMS road network
+        '''
+        print("Repairing geometry of HPMS road network...")
+        hpms_merged = self.hpms_loaded
+
+        hpms_merged['geometry'] = hpms_merged['geometry'].apply(make_valid)
+        hpms_merged.to_file(self.hpms_gdb, layer='HPMS_2018_repair_geo', driver='OpenFileGDB')
+
+        self.hpms_loaded = hpms_merged
 
     def subset_hpms_geometry(self):
-        pass
+        '''
+        Summary: Subset geometry to 50 states and Washington DC
+        '''
+        print("Subsetting HPMS road network to 50 states and Washington DC...")
+
+        hpms = self.hpms_loaded
+        hpms = hpms[(hpms['State_Code'] != 78) & (hpms['State_Code'] != 72)]
+        hpms.to_file(self.hpms_gdb, layer='HPMS_2018_state_sub_proj', driver='OpenFileGDB')
+
+        self.hpms_loaded = hpms
 
     def intersect_hpms_county(self):
-        pass
+        '''
+        Summary: Intersect HPMS road network with US county boundaries
+        '''
+        print("Intersecting HPMS road network with US county boundaries...")
+
+        hpms = self.hpms_loaded
+
+        counties = gpd.read_file(self.hpms_gdb, layer='US_census_county_2020', engine="pyogrio", use_arrow=True)
+        hpms_county_intxn = gpd.overlay(hpms, counties, how='intersection')
+        hpms_county_intxn.to_file(self.hpms_gdb, layer='HPMS_2018_county_intxn', driver='OpenFileGDB')
+
+        self.hpms_loaded = hpms_county_intxn
 
     def add_unique_id(self):
-        pass
+        '''
+        Summary: Generate new field with unique ID for road links
+        '''
+        print("Calculating new field for road link FID: [FID_Link_Cnty_Intxn]")
+
+        hpms_county_intxn = self.hpms_loaded
+        hpms_county_intxn['FID_Link_Cnty_Intxn'] = hpms_county_intxn.index
+        hpms_county_intxn.to_file(self.hpms_gdb, layer='HPMS_2018_county_intxn', driver='OpenFileGDB')
+        self.hpms_loaded = hpms_county_intxn
 
     def correct_urban_codes(self):
-        pass
+        '''
+        Summary: Correct urban codes in HPMS data (including links with no urban code)
+        '''
+        print("Correcting urban codes in HPMS data...")
+
+        hpms_county_intxn = self.hpms_loaded
+        urban_areas = gpd.read_file(self.hpms_gdb, layer='US_census_uac_2010', engine="pyogrio", use_arrow=True)
+        hpms_cnty_uac_join = gpd.sjoin(hpms_county_intxn, urban_areas, how='left', op='intersects')
+        hpms_cnty_uac_join.to_file(self.hpms_gdb, layer='HPMS_2018_cnty_uac_join', driver='OpenFileGDB')
+        self.hpms_loaded = hpms_cnty_uac_join
     
-class ArcPyHPMSDataPreparation:
-    def __init__(self, storage_dir: Path):
-        self.storage_dir = storage_dir
-        if not storage_dir.exists():
-            storage_dir.mkdir(parents=True)
-        self.hpms_dir = storage_dir / "HPMS"
-        if not self.hpms_dir.exists():
-            self.hpms_dir.mkdir(parents=True)
-        self.td_dir = storage_dir / "Traffic_Density"
-        if not self.td_dir.exists():
-            self.td_dir.mkdir(parents=True)
-
-        self.hpms_gdb = self.hpms_dir / "HPMS.gdb"
-        self.td_gdb = self.td_dir / "Traffic_Density.gdb"
-
-        arcpy.env.overwriteOutput = True
-        print('arcpy.env.overwriteOutput', arcpy.env.overwriteOutput,'\n')
+class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
     
     def make_hpms_gdb(self):
         gdb_folder_path = str(self.hpms_dir.absolute())
@@ -321,9 +400,9 @@ def main():
     STORAGE_DIR = Path("../data/processed_data")
 
     if ARCPY == True:
-        DataPrep = ArcPyHPMSDataPreparation(STORAGE_DIR)
+        DataPrep = ArcPy_HPMSDataPreparation(STORAGE_DIR)
     else:
-        DataPrep = HPMSDataPreparation(STORAGE_DIR)
+        DataPrep = NoArcpy_HPMSDataPreparation(STORAGE_DIR)
     
     DataPrep.copy_raw_hpms(Path("../data/raw_data/HPMS/HPMS_2018.gdb"))
     DataPrep.copy_raw_census(Path("../data/raw_data/census/US_county_2020.shp"))
@@ -339,4 +418,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

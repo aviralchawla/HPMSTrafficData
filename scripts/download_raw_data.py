@@ -150,17 +150,13 @@ def main():
     TIGER_URL = "https://www2.census.gov/geo/tiger/TIGER"
     SHAPEFILE_YEAR = 2020
     
-    # Download HPMS Data
     hpms_filename = 'ntad_2019_hpms_raw.zip'
     download_hpms_data(STORAGE_DIR, filename=hpms_filename)
 
-    # Download Census Counties Data
     download_census_counties_data(SHAPEFILE_YEAR, TIGER_URL, STORAGE_DIR)
 
-    # Download Census Urban Areas Data
     download_census_urban_areas_data(SHAPEFILE_YEAR, TIGER_URL, STORAGE_DIR)
 
-    # Download Census Blocks Data
     download_census_blocks_data(SHAPEFILE_YEAR, TIGER_URL, STORAGE_DIR)
 
     # Verify the downloaded files

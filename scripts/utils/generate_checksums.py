@@ -4,13 +4,27 @@ import os
 import json
 import tqdm
 
-def generate_checksums(file_path):
+def generate_checksums(file_path: str):
+    '''
+    Summary: Generates a checksum for a file
+    Input:
+        - file_path (str): Path to the file
+    Output:
+        - checksum (str): Checksum of the file
+    '''
     with open(file_path, 'rb') as file:
         file_content = file.read()
     checksum =  hashlib.sha256(file_content).hexdigest()
     return checksum
 
-def get_all_files(directory):
+def get_all_files(directory: Path):
+    '''
+    Summary: Get all files in a directory
+    Input:
+        - directory (Path): Path to the directory
+    Output:
+        - files (list): List of all files in the directory
+    '''
     files = []
     for dirpath, dirnames, filenames in os.walk(directory):
         for filename in filenames:
@@ -39,5 +53,8 @@ def main():
         
         with open(Path(f'../../data/checksums_{str(DATA_DIR).split('/')[-1]}.json'), 'w') as f:
             json.dump(checksums, f)
+
+if __name__ == '__main__':
+    main()
 
 

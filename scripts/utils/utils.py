@@ -44,7 +44,7 @@ def shp_to_gdb(input_shp: Path, output_gdb: Path, layer_name: str):
     Output:
         - File geodatabase with the converted shapefile
     '''
-    layer = gpd.read_file(input_shp)
+    layer = gpd.read_file(input_shp, engine="pyogrio", use_arrow=True)
     layer.to_file(output_gdb, layer=layer_name, driver='OpenFileGDB')
 
 def get_state_fips(blocks_dir: Path):
@@ -52,6 +52,8 @@ def get_state_fips(blocks_dir: Path):
     Summary: Get the state FIPS codes from the directory names
     Inputs:
         - blocks_dir (Path): Path to the directory containing the Census Blocks data
+    Output:
+        - state_fips (list): List of state FIPS codes
     '''
     
     all_dirs = os.listdir(blocks_dir)
