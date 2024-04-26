@@ -50,8 +50,12 @@ def main():
         for file in tqdm.tqdm(files):
             checksum = generate_checksums(file)
             checksums[file[3:]] = checksum
+
+        root_dir = Path('../../data')
+        outfile_name = 'checksums_' + str(str(DATA_DIR).split('/')[-1]) + '.json'
+        outfile = root_dir / outfile_name
         
-        with open(Path(f'../../data/checksums_{str(DATA_DIR).split('/')[-1]}.json'), 'w') as f:
+        with open(Path(outfile, 'w')) as f:
             json.dump(checksums, f)
 
 if __name__ == '__main__':
