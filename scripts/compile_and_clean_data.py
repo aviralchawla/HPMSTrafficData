@@ -9,24 +9,20 @@ Summary: This script
 
 <LICENSE>
 """
-# import statements
-try:
-    import arcpy
-    ARCPY = True
-    arcpy.env.overwriteOutput = True
-    print('arcpy.env.overwriteOutput', arcpy.env.overwriteOutput,'\n')
-except:
-    import geopandas as gpd
-    import fiona
-    from utils.utils import shp_to_gdb, get_state_fips
-    from shapely.validation import make_valid
-    ARCPY = False
-    print('ArcPy is not available. Data will be processed differently')
-
 import os
 import sys
 from pathlib import Path
 import tqdm
+from utils.utils import get_state_fips
+
+try:
+    import arcpy
+    arcpy.env.overwriteOutput = True
+    print('arcpy.env.overwriteOutput', arcpy.env.overwriteOutput,'\n')
+except:
+    print('ArcPy is not available... Install ArcPy to continue')
+    sys.exit(1)
+
 
 class HPMSDataPreparation:
 
@@ -41,149 +37,9 @@ class HPMSDataPreparation:
         if not self.td_dir.exists():
             self.td_dir.mkdir(parents=True)
     
-        self.hpms_gdb = self.hpms_dir / "HPMS.gdb"
-        self.td_gdb = self.td_dir / "Traffic_Density.gdb"
+        self.hpms_gdb = str((self.hpms_dir / "HPMS.gdb").absolute())
+        self.td_gdb = str((self.td_dir / "Traffic_Density.gdb").absolute())
 
-class NoArcpy_HPMSDataPreparation(HPMSDataPreparation):
-
-    def copy_raw_hpms(self, hpms_raw_gdb: Path):
-        '''
-        Summary: Copy raw HPMS data to HPMS file geodatabase in processed data dir
-        Inputs:
-            - hpms_raw_gdb (Path): Path to the raw HPMS data
-        '''
-
-        print("Copying raw HPMS data to HPMS file geodatabase...")
-
-        hpms = {}
-
-        # List all layers in the HPMS raw data
-        with fiona.Env():
-            hpms_raw_layers = fiona.listlayers(hpms_raw_gdb)
-
-        for layer in tqdm.tqdm(hpms_raw_layers):
-            if 'fsys' in layer:
-                hpms[layer] = gpd.read_file(hpms_raw_gdb, layer=layer, engine="pyogrio", use_arrow=True)
-                hpms[layer].to_file(self.hpms_gdb, layer=layer, driver='OpenFileGDB')
-        
-        # save the loaded HPMS data to avoid reloading
-        self.hpms_loaded = hpms
-    
-    def copy_raw_census_counties(self, census_shp: Path):
-        '''
-        Summary: Copy raw Census data to HPMS file geodatabase in processed data dir
-        Inputs:
-            - census_shp (Path): Path to the raw Census shapefile
-        '''
-        print("Copying raw Census data to HPMS file geodatabase...")
-
-        shp_to_gdb(census_shp, self.hpms_gdb, 'US_census_county_2020')
-
-    def copy_raw_census_urban(self, urban_areas_shp: Path):
-        '''
-        Summary: Copy raw Census urban area data to HPMS file geodatabase in processed data dir
-        Inputs:
-            - urban_areas_shp (Path): Path to the raw Census urban area shapefile
-        '''
-        print("Copying raw Census urban area data to HPMS file geodatabase...")
-
-        shp_to_gdb(urban_areas_shp, self.hpms_gdb, 'US_census_uac_2010')
-
-    def copy_raw_census_blocks(self, blocks_dir: Path):
-        '''
-        Summary: Copy raw Census blocks data to Traffic Density file geodatabase in processed data dir
-        Input: 
-            - blocks_dir (Path): Path to the raw Census blocks data
-        '''
-        print("Copying raw Census blocks data to Traffic Density file geodatabase...")
-
-        state_fips_codes = get_state_fips(blocks_dir)
-        base_file_path = "../data/raw_data/census/blocks/tl_2020_{}_tabblock10/tl_2020_{}_tabblock10.shp"
-
-        for fips in tqdm.tqdm(state_fips_codes):
-            blocks_shp = base_file_path.format(fips, fips)
-            shp_to_gdb(blocks_shp, self.td_gdb, f'tl_2020_{fips}_tabblock10')
-
-    def merge_hpms_data(self):
-        '''
-        Summmary: Merge the HPMS data from the two feature classes into a single feature class
-        '''
-        print("Merging HPMS data...")
-
-        hpms = self.hpms_loaded
-
-        layers = list(hpms.keys())
-        hpms_merged = gpd.GeoDataFrame()
-
-        for layer in layers:
-            hpms_merged = hpms_merged.append(hpms[layer])
-        
-        hpms_merged.to_file(self.hpms_gdb, layer='HPMS_2018_123456', driver='OpenFileGDB')
-
-        self.hpms_loaded = hpms_merged
-
-
-    def repair_hpms_geometry(self):
-        '''
-        Summary: Repair geometry of HPMS road network
-        '''
-        print("Repairing geometry of HPMS road network...")
-        hpms_merged = self.hpms_loaded
-
-        hpms_merged['geometry'] = hpms_merged['geometry'].apply(make_valid)
-        hpms_merged.to_file(self.hpms_gdb, layer='HPMS_2018_repair_geo', driver='OpenFileGDB')
-
-        self.hpms_loaded = hpms_merged
-
-    def subset_hpms_geometry(self):
-        '''
-        Summary: Subset geometry to 50 states and Washington DC
-        '''
-        print("Subsetting HPMS road network to 50 states and Washington DC...")
-
-        hpms = self.hpms_loaded
-        hpms = hpms[(hpms['State_Code'] != 78) & (hpms['State_Code'] != 72)]
-        hpms.to_file(self.hpms_gdb, layer='HPMS_2018_state_sub_proj', driver='OpenFileGDB')
-
-        self.hpms_loaded = hpms
-
-    def intersect_hpms_county(self):
-        '''
-        Summary: Intersect HPMS road network with US county boundaries
-        '''
-        print("Intersecting HPMS road network with US county boundaries...")
-
-        hpms = self.hpms_loaded
-
-        counties = gpd.read_file(self.hpms_gdb, layer='US_census_county_2020', engine="pyogrio", use_arrow=True)
-        hpms_county_intxn = gpd.overlay(hpms, counties, how='intersection')
-        hpms_county_intxn.to_file(self.hpms_gdb, layer='HPMS_2018_county_intxn', driver='OpenFileGDB')
-
-        self.hpms_loaded = hpms_county_intxn
-
-    def add_unique_id(self):
-        '''
-        Summary: Generate new field with unique ID for road links
-        '''
-        print("Calculating new field for road link FID: [FID_Link_Cnty_Intxn]")
-
-        hpms_county_intxn = self.hpms_loaded
-        hpms_county_intxn['FID_Link_Cnty_Intxn'] = hpms_county_intxn.index
-        hpms_county_intxn.to_file(self.hpms_gdb, layer='HPMS_2018_county_intxn', driver='OpenFileGDB')
-        self.hpms_loaded = hpms_county_intxn
-
-    def correct_urban_codes(self):
-        '''
-        Summary: Correct urban codes in HPMS data (including links with no urban code)
-        '''
-        print("Correcting urban codes in HPMS data...")
-
-        hpms_county_intxn = self.hpms_loaded
-        urban_areas = gpd.read_file(self.hpms_gdb, layer='US_census_uac_2010', engine="pyogrio", use_arrow=True)
-        hpms_cnty_uac_join = gpd.sjoin(hpms_county_intxn, urban_areas, how='left', op='intersects')
-        hpms_cnty_uac_join.to_file(self.hpms_gdb, layer='HPMS_2018_cnty_uac_join', driver='OpenFileGDB')
-        self.hpms_loaded = hpms_cnty_uac_join
-    
 class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
     
     def make_hpms_gdb(self):
@@ -215,14 +71,11 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
 
         arcpy.env.workspace = self.hpms_gdb
 
-        fc_123 = "hpms_2018_fsys123_2019_10_21"
-        fc_456 = "hpms_2018_fsys456_2019_10_21"
+        self.fc_123 = "hpms_2018_fsys123_2019_10_21"
+        self.fc_456 = "hpms_2018_fsys456_2019_10_21"
 
-        self.hpms_fc_123 = fc_123
-        self.hpms_fc_456 = fc_456
-
-        arcpy.Copy_management(f"{hpms_raw_gdb}\\{fc_123}", f"{hpms_raw_gdb}\\{fc_123}")
-        arcpy.Copy_management(f"{hpms_raw_gdb}\\{fc_456}", f"{hpms_raw_gdb}\\{fc_456}")
+        arcpy.Copy_management(f"{hpms_raw_gdb}\\{self.fc_123}", f"{self.hpms_gdb}\\{self.fc_123}")
+        arcpy.Copy_management(f"{hpms_raw_gdb}\\{self.fc_456}", f"{self.hpms_gdb}\\{self.fc_456}")
     
     def copy_raw_census_counties(self, census_shp: Path):
         '''
@@ -234,7 +87,7 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
 
         arcpy.env.workspace = self.hpms_gdb
 
-        in_features = census_shp.absolute()
+        in_features = str(census_shp.absolute())
         out_features = f'{self.hpms_gdb}\\US_census_county_2020'
         where_clause = ""
         use_field_alias_as_name = "NOT_USE_ALIAS"
@@ -252,7 +105,7 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
 
         arcpy.env.workspace = self.hpms_gdb
 
-        in_features = urban_areas_shp.absolute()
+        in_features = str(urban_areas_shp.absolute())
         out_features = f'{self.hpms_gdb}\\US_census_uac_2010'
         where_clause = ""
         use_field_alias_as_name = "NOT_USE_ALIAS"
@@ -289,13 +142,12 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
         arcpy.env.workspace = self.hpms_gdb
         arcpy.env.outputCoordinateSystem = arcpy.SpatialReference("USA Contiguous Albers Equal Area Conic USGS")
 
-        inputs = f"{self.hpms_fc_123};{self.hpms_fc_456}"
-        output = "HPMS_2018_123456"
-        self.hpms_fc_123456 = output
+        input = f"{self.fc_123};{self.fc_456}"
+        self.fc_123456 = "HPMS_2018_123456"
         #TODO: Load field mappings from local file!
         field_mappings='Year_Record "Year_Record" true true false 2 Short 0 0,First,#,hpms_2018_fsys123_2019_10_21,Year_Record,-1,-1,hpms_2018_fsys456_2019_10_21,Year_Record,-1,-1;State_Code "State_Code" true true false 2 Short 0 0,First,#,hpms_2018_fsys123_2019_10_21,State_Code,-1,-1,hpms_2018_fsys456_2019_10_21,State_Code,-1,-1;Route_ID "Route_ID" true true false 2048 Text 0 0,First,#,hpms_2018_fsys123_2019_10_21,Route_ID,0,2048,hpms_2018_fsys456_2019_10_21,Route_ID,0,2048;Begin_Point "Begin_Point" true true false 8 Double 0 0,First,#,hpms_2018_fsys123_2019_10_21,Begin_Point,-1,-1,hpms_2018_fsys456_2019_10_21,Begin_Point,-1,-1;End_Point "End_Point" true true false 8 Double 0 0,First,#,hpms_2018_fsys123_2019_10_21,End_Point,-1,-1,hpms_2018_fsys456_2019_10_21,End_Point,-1,-1;AADT "AADT" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,AADT,-1,-1,hpms_2018_fsys456_2019_10_21,AADT,-1,-1;AADT_COMBINATION "AADT_COMBINATION" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,AADT_COMBINATION,-1,-1,hpms_2018_fsys456_2019_10_21,AADT_COMBINATION,-1,-1;AADT_SINGLE_UNIT "AADT_SINGLE_UNIT" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,AADT_SINGLE_UNIT,-1,-1,hpms_2018_fsys456_2019_10_21,AADT_SINGLE_UNIT,-1,-1;ACCESS_CONTROL_ "ACCESS_CONTROL_" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,ACCESS_CONTROL_,-1,-1,hpms_2018_fsys456_2019_10_21,ACCESS_CONTROL_,-1,-1;COUNTY_CODE "COUNTY_CODE" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,COUNTY_CODE,-1,-1,hpms_2018_fsys456_2019_10_21,COUNTY_CODE,-1,-1;F_SYSTEM "F_SYSTEM" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,F_SYSTEM,-1,-1,hpms_2018_fsys456_2019_10_21,F_SYSTEM,-1,-1;FACILITY_TYPE "FACILITY_TYPE" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,FACILITY_TYPE,-1,-1,hpms_2018_fsys456_2019_10_21,FACILITY_TYPE,-1,-1;IRI "IRI" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,IRI,-1,-1,hpms_2018_fsys456_2019_10_21,IRI,-1,-1;IRI_YEAR "IRI_YEAR" true true false 8 Date 0 0,First,#,hpms_2018_fsys123_2019_10_21,IRI_YEAR,-1,-1,hpms_2018_fsys456_2019_10_21,IRI_YEAR,-1,-1;NHS "NHS" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,NHS,-1,-1,hpms_2018_fsys456_2019_10_21,NHS,-1,-1;OWNERSHIP "OWNERSHIP" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,OWNERSHIP,-1,-1,hpms_2018_fsys456_2019_10_21,OWNERSHIP,-1,-1;PSR "PSR" true true false 8 Double 0 0,First,#,hpms_2018_fsys123_2019_10_21,PSR,-1,-1,hpms_2018_fsys456_2019_10_21,PSR,-1,-1;ROUTE_NUMBER "ROUTE_NUMBER" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,ROUTE_NUMBER,-1,-1,hpms_2018_fsys456_2019_10_21,ROUTE_NUMBER,-1,-1;ROUTE_NAME "ROUTE_NAME" true true false 100 Text 0 0,First,#,hpms_2018_fsys123_2019_10_21,ROUTE_NAME,0,100,hpms_2018_fsys456_2019_10_21,ROUTE_NAME,0,100;ROUTE_QUALIFIER "ROUTE_QUALIFIER" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,ROUTE_QUALIFIER,-1,-1,hpms_2018_fsys456_2019_10_21,ROUTE_QUALIFIER,-1,-1;ROUTE_SIGNING "ROUTE_SIGNING" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,ROUTE_SIGNING,-1,-1,hpms_2018_fsys456_2019_10_21,ROUTE_SIGNING,-1,-1;SPEED_LIMIT "SPEED_LIMIT" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,SPEED_LIMIT,-1,-1,hpms_2018_fsys456_2019_10_21,SPEED_LIMIT,-1,-1;STRAHNET_TYPE "STRAHNET_TYPE" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,STRAHNET_TYPE,-1,-1,hpms_2018_fsys456_2019_10_21,STRAHNET_TYPE,-1,-1;STRUCTURE_TYPE "STRUCTURE_TYPE" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,STRUCTURE_TYPE,-1,-1,hpms_2018_fsys456_2019_10_21,STRUCTURE_TYPE,-1,-1;SURFACE_TYPE "SURFACE_TYPE" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,SURFACE_TYPE,-1,-1,hpms_2018_fsys456_2019_10_21,SURFACE_TYPE,-1,-1;THROUGH_LANES "THROUGH_LANES" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,THROUGH_LANES,-1,-1,hpms_2018_fsys456_2019_10_21,THROUGH_LANES,-1,-1;TOLL_CHARGED "TOLL_CHARGED" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,TOLL_CHARGED,-1,-1,hpms_2018_fsys456_2019_10_21,TOLL_CHARGED,-1,-1;TOLL_TYPE "TOLL_TYPE" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,TOLL_TYPE,-1,-1,hpms_2018_fsys456_2019_10_21,TOLL_TYPE,-1,-1;TRUCK "TRUCK" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,TRUCK,-1,-1,hpms_2018_fsys456_2019_10_21,TRUCK,-1,-1;URBAN_CODE "URBAN_CODE" true true false 4 Long 0 0,First,#,hpms_2018_fsys123_2019_10_21,URBAN_CODE,-1,-1,hpms_2018_fsys456_2019_10_21,URBAN_CODE,-1,-1;SHAPE_Length "SHAPE_Length" false true true 8 Double 0 0,First,#,hpms_2018_fsys123_2019_10_21,SHAPE_Length,-1,-1,hpms_2018_fsys456_2019_10_21,SHAPE_Length,-1,-1'
         add_source = "NO_SOURCE_INFO"
-        arcpy.management.Merge(inputs, output, field_mappings, add_source)
+        arcpy.management.Merge(input, self.fc_123456, field_mappings, add_source)
     
     def repair_hpms_geometry(self):
         '''
@@ -305,13 +157,12 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
         arcpy.env.outputCoordinateSystem = arcpy.SpatialReference("USA Contiguous Albers Equal Area Conic USGS")
 
         print("Repairing geometry of HPMS road network...")
-        in_features = self.hpms_fc_123456
-        out_features = "HPMS_2018_repair_geo"
-        self.hpms_repair_geo = out_features
+        in_features = self.fc_123456
+        self.repair_geo = "HPMS_2018_repair_geo"
         where_clause = ""
         use_field_alias_as_name = "NOT_USE_ALIAS"
         sort_field = None
-        arcpy.conversion.ExportFeatures(in_features, out_features, where_clause, use_field_alias_as_name, sort_field)
+        arcpy.conversion.ExportFeatures(in_features, self.repair_geo, where_clause, use_field_alias_as_name, sort_field)
 
         in_features = "HPMS_2018_repair_geo"
         delete_null = "DELETE_NULL"
@@ -327,7 +178,7 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
 
         print("Subsetting HPMS road network to 50 states and Washington DC...")
 
-        fc_name = self.hpms_repair_geo
+        fc_name = self.repair_geo
         feature_layer_name = "HPMS_2018_state"
         arcpy.management.MakeFeatureLayer(fc_name, feature_layer_name)
 
@@ -396,16 +247,14 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
 
 def main():
     STORAGE_DIR = Path("../data/processed_data")
+    RAW_DIR = Path("../data/raw_data")
 
-    if ARCPY == True:
-        DataPrep = ArcPy_HPMSDataPreparation(STORAGE_DIR)
-    else:
-        DataPrep = NoArcpy_HPMSDataPreparation(STORAGE_DIR)
+    DataPrep = ArcPy_HPMSDataPreparation(STORAGE_DIR)
     
-    DataPrep.copy_raw_hpms(Path("../data/raw_data/ntad_2019_hpms_raw/NTAD2019_GDB_HPMS2018_2019_10_21.gdb"))
-    DataPrep.copy_raw_census_counties(Path("../data/raw_data/census/counties/tl_2020_us_county/tl_2020_us_county.shp"))
-    DataPrep.copy_raw_census_urban(Path("../data/raw_data/census/urban_areas/tl_2020_us_uac10/tl_2020_us_uac10.shp"))
-    DataPrep.copy_raw_census_blocks(Path("../data/raw_data/census/blocks"))
+    DataPrep.copy_raw_hpms(RAW_DIR / 'ntad_2019_hpms_raw' / 'NTAD2019_GDB_HPMS2018_2019_10_21.gdb')
+    DataPrep.copy_raw_census_counties(RAW_DIR /'census' / 'counties' / 'tl_2020_us_county' / 'tl_2020_us_county.shp')
+    DataPrep.copy_raw_census_urban(RAW_DIR / 'census' / 'urban_areas' / 'tl_2020_us_uac10' / 'tl_2020_us_uac10.shp')
+    DataPrep.copy_raw_census_blocks(RAW_DIR / 'census' / 'blocks')
 
     DataPrep.merge_hpms_data()
     DataPrep.repair_hpms_geometry()
