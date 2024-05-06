@@ -39,17 +39,15 @@ class HPMSDataPreparation:
     
         self.hpms_gdb = str((self.hpms_dir / "HPMS.gdb").absolute())
         self.td_gdb = str((self.td_dir / "Traffic_Density.gdb").absolute())
-
-class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
     
-    def make_hpms_gdb(self):
+    def _make_hpms_gdb(self):
         gdb_folder_path = str(self.hpms_dir.absolute())
         gdb_name = "HPMS.gdb"
         arcpy.CreateFileGDB_management(gdb_folder_path, gdb_name)
         HPMS_gdb = os.path.join(gdb_folder_path, gdb_name)
         print(f"Created file geodatabase for HPMS data: {HPMS_gdb}")
     
-    def make_td_gdb(self):
+    def _make_td_gdb(self):
         gdb_folder_path = str(self.td_dir.absolute())
         gdb_name = "Traffic_Density.gdb"
         arcpy.CreateFileGDB_management(gdb_folder_path, gdb_name)
@@ -65,7 +63,7 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
         Outputs:
             - hpms (dict): Dictionary of HPMS data layers
         '''
-        self.make_hpms_gdb()
+        self._make_hpms_gdb()
 
         print("Copying raw HPMS data to HPMS file geodatabase...")
 
@@ -119,7 +117,7 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
         '''
         print("Copying raw Census blocks data to Traffic Density file geodatabase...")
         
-        self.make_td_gdb()
+        self._make_td_gdb()
 
         arcpy.env.workspace = self.td_gdb
 
@@ -246,22 +244,23 @@ class ArcPy_HPMSDataPreparation(HPMSDataPreparation):
 
 
 def main():
+
     STORAGE_DIR = Path("../data/processed_data")
     RAW_DIR = Path("../data/raw_data")
 
-    DataPrep = ArcPy_HPMSDataPreparation(STORAGE_DIR)
+    prep = HPMSDataPreparation(STORAGE_DIR)
     
-    DataPrep.copy_raw_hpms(RAW_DIR / 'ntad_2019_hpms_raw' / 'NTAD2019_GDB_HPMS2018_2019_10_21.gdb')
-    DataPrep.copy_raw_census_counties(RAW_DIR /'census' / 'counties' / 'tl_2020_us_county' / 'tl_2020_us_county.shp')
-    DataPrep.copy_raw_census_urban(RAW_DIR / 'census' / 'urban_areas' / 'tl_2020_us_uac10' / 'tl_2020_us_uac10.shp')
-    DataPrep.copy_raw_census_blocks(RAW_DIR / 'census' / 'blocks')
+    prep.copy_raw_hpms(RAW_DIR / 'ntad_2019_hpms_raw' / 'NTAD2019_GDB_HPMS2018_2019_10_21.gdb')
+    prep.copy_raw_census_counties(RAW_DIR /'census' / 'counties' / 'tl_2020_us_county' / 'tl_2020_us_county.shp')
+    prep.copy_raw_census_urban(RAW_DIR / 'census' / 'urban_areas' / 'tl_2020_us_uac10' / 'tl_2020_us_uac10.shp')
+    prep.copy_raw_census_blocks(RAW_DIR / 'census' / 'blocks')
 
-    DataPrep.merge_hpms_data()
-    DataPrep.repair_hpms_geometry()
-    DataPrep.subset_hpms_geometry()
-    DataPrep.intersect_hpms_county()
-    DataPrep.add_unique_id()
-    DataPrep.correct_urban_codes()
+    prep.merge_hpms_data()
+    prep.repair_hpms_geometry()
+    prep.subset_hpms_geometry()
+    prep.intersect_hpms_county()
+    prep.add_unique_id()
+    prep.correct_urban_codes()
 
 if __name__ == '__main__':
     main()

@@ -1,3 +1,5 @@
 *.pkl
 *.csv
-src/__pycache__
+*.pyc
+data/processed_data
+data/raw_data
