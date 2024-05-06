@@ -8,6 +8,9 @@ The repository is organized as follows:
 
 ## Get Started
 To get started with this project, you need to follow the following steps:
+1. Initialize your ArcPy environment as `arcpy-hpms`.
+2. `conda activate arcpy-hpms`
+3. `powershell -File 'setup.ps1'`
 
 ## Data Source
 The data used in this project is the HPMS data, which is available at the [??](). The data is available in the form of a geodatabase file, which are organized by state and year.
