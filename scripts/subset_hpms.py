@@ -130,3 +130,6 @@ def main():
   hpms_sub = subset_hpms(hpms_intx)
 
   hpms_sub.to_csv(HPMS_GDB / '..' / 'hpms_aadt_subset.csv', index=False)
+
+if __name__ == '__main__':
+  main()
