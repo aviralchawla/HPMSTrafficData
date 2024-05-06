@@ -92,8 +92,6 @@ area_unit = "SQUARE_METERS"
 try:
     arcpy.management.CalculateGeometryAttributes(in_feature, geometry_property, length_unit, area_unit)
     print('Calculated new field for intersection area: {}'.format(field_name))
-
-
 except Exception as e:
     # print error messages
     print(arcpy.GetMessages())
