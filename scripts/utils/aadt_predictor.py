@@ -14,6 +14,7 @@ from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_validate
 from sklearn.model_selection import GridSearchCV
+from pathlib import Path
 
 class AADTPredictor:
     def __init__(self, data_path: Path, response_var, random_state: int = 42):
@@ -21,7 +22,6 @@ class AADTPredictor:
         self.data = None
         self.data_full = None
         self.response_var = response_var
-        self.outdir = outdir
         self.model = None
         self.random_state = random_state
 
