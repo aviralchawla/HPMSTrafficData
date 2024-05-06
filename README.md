@@ -31,11 +31,11 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 This project is supported by the Transportation Research Center at the University of Vermont.
 
 ### Order of the scripts [Main Pipeline]
-1. download_raw_data d.py (1)
-2. HPMS_organize_gdb.py (2)
-3. HPMS_data_preparation.pu (2)
-4. NearRoadExp_AADT_Subset.py (2)
-5. aadt_imputation.py (3)
+1. ~~ download_raw_data d.py (1) ~~
+2. ~~ HPMS_organize_gdb.py (2) ~~
+3. ~~ HPMS_data_preparation.pu (2) ~~
+4. ~~ NearRoadExp_AADT_Subset.py (2) ~~
+5. ~~ aadt_imputation.py (3) ~~
 6. JoinGeometry_HPMS_AADT_imputation.py (3)
 7. vmt_calc.py (3)
 9. TD_organize_gdb.py (4)
