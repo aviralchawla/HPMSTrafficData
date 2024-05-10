@@ -4,43 +4,51 @@ import os
 import json
 import tqdm
 
+
 def generate_checksums(file_path: str):
-    '''
+    """
     Summary: Generates a checksum for a file
     Input:
         - file_path (str): Path to the file
     Output:
         - checksum (str): Checksum of the file
-    '''
-    with open(file_path, 'rb') as file:
+    """
+    with open(file_path, "rb") as file:
         file_content = file.read()
-    checksum =  hashlib.sha256(file_content).hexdigest()
+    checksum = hashlib.sha256(file_content).hexdigest()
     return checksum
 
+
 def get_all_files(directory: Path):
-    '''
+    """
     Summary: Get all files in a directory
     Input:
         - directory (Path): Path to the directory
     Output:
         - files (list): List of all files in the directory
-    '''
+    """
     files = []
     for dirpath, dirnames, filenames in os.walk(directory):
         for filename in filenames:
             files.append(os.path.join(dirpath, filename))
     return files
 
+
 def main():
 
     RAW_DATA_DIR = Path("../../data/raw_data")
 
-    HPMS_DIR = RAW_DATA_DIR / 'ntad_2019_hpms_raw'
-    CENSUS_COUNTIES_DIR = RAW_DATA_DIR / 'census' / 'counties'
-    CENSUS_URBAN_AREAS_DIR = RAW_DATA_DIR / 'census' / 'urban_areas'
-    CENSUS_BLOCKS_DIR = RAW_DATA_DIR / 'census' / 'blocks'
+    HPMS_DIR = RAW_DATA_DIR / "ntad_2019_hpms_raw"
+    CENSUS_COUNTIES_DIR = RAW_DATA_DIR / "census" / "counties"
+    CENSUS_URBAN_AREAS_DIR = RAW_DATA_DIR / "census" / "urban_areas"
+    CENSUS_BLOCKS_DIR = RAW_DATA_DIR / "census" / "blocks"
 
-    for DATA_DIR in [HPMS_DIR, CENSUS_COUNTIES_DIR, CENSUS_URBAN_AREAS_DIR, CENSUS_BLOCKS_DIR]:
+    for DATA_DIR in [
+        HPMS_DIR,
+        CENSUS_COUNTIES_DIR,
+        CENSUS_URBAN_AREAS_DIR,
+        CENSUS_BLOCKS_DIR,
+    ]:
 
         files = get_all_files(DATA_DIR)
 
@@ -51,14 +59,15 @@ def main():
             checksum = generate_checksums(file)
             checksums[file[3:]] = checksum
 
-        root_dir = Path('../../data')
-        outfile_name = 'checksums_' + str(str(DATA_DIR).split('/')[-1]) + '.json'
+        root_dir = Path("../../data")
+        outfile_name = "checksums_" + str(str(DATA_DIR).split("/")[-1]) + ".json"
         outfile = root_dir / outfile_name
-        
-        with open(Path(outfile, 'w')) as f:
+
+        with open(Path(outfile, "w")) as f:
             json.dump(checksums, f)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
 
 

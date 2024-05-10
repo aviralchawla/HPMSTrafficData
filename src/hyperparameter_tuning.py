@@ -1,4 +1,4 @@
-import aadt_predictor as ap
+import scripts.utils.aadt_predictor as ap
 import pickle as pkl
 import time
 

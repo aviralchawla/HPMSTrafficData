@@ -3,6 +3,7 @@ import requests
 import sys
 import zipfile
 import os
+import geopandas as gpd
 
 def download_file(url: str, storage_dir: Path):
     '''
@@ -45,3 +46,14 @@ def get_state_fips(blocks_dir: Path):
     state_fips = [f.split('_')[2] for f in all_dirs]
 
     return state_fips
+
+def load_data(gdb, layer):
+    '''
+    Summary: Load data from the geodatabase
+    Inputs:
+        - gdb (str): Path to the geodatabase
+        - layer (str): Name of the layer to load
+    Output:
+        - gpd.DataFrame: Geopandas DataFrame containing the data
+    '''
+    return gpd.read_file(gdb, layer=layer, engine='pyogrio', use_arrow=True)

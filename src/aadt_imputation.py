@@ -1,5 +1,5 @@
-import aadt_predictor as ap
-import aadt_predictor as ap
+import scripts.utils.aadt_predictor as ap
+import scripts.utils.aadt_predictor as ap
 import time
 
 start = time.time()
