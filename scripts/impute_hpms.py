@@ -6,7 +6,7 @@ def main():
 
     HPMS_DIR = Path('../data/processed_data/HPMS')
     RESPONSE_VARS = ['AADT_MDV', 'AADT_HDV']
-    RF_PREDICTOR_VARS = ["COUNTYFP", "F_SYSTEM", "THROUGH_LANES", "AADT"]
+    RF_PREDICTOR_VARS = ["STATEFP", "COUNTYFP", "F_SYSTEM", "THROUGH_LANES", "AADT"]
     RANDOM_STATE = 42
 
     predictor = ap.AADTPredictor(HPMS_DIR / 'hpms_aadt_subset.csv', None, random_state = RANDOM_STATE)
