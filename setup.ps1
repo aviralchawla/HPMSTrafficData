@@ -16,4 +16,8 @@ python impute_hpms.py
 python joingeo_hpms.py
 
 # Traffic Density
+python compile_traffic_density.py
+python estimate_traffic_density.py
+
+# Traffic Density
 Set-Location -Path ..

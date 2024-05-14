@@ -1,6 +1,5 @@
 import pandas as pd
 import geopandas as gpd
-import os
 from shapely import wkt
 from pathlib import Path
 
