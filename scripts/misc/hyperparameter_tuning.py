@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from skopt import BayesSearchCV
 from skopt.space import Real, Categorical, Integer
+from skopt.plots import plot_objective, plot_histogram
 import matplotlib.pyplot as plt
 
 # Get the absolute path of the parent directory
@@ -16,13 +17,13 @@ if parent_dir not in sys.path:
 
 import utils.aadt_predictor as ap
 
-
-
 def main():
 
     HPMS_DIR = Path('../../data/processed_data/HPMS')
     RANDOM_STATE = 42
-    NUM_ITERS = 64
+
+    NUM_ITERS = 48
+    NUM_JOBS = 48
     
     RESPONSE_VARS = ['AADT_MDV', 'AADT_HDV']
     RF_PREDICTOR_VARS = ["STATEFP", "COUNTYFP", "F_SYSTEM", "THROUGH_LANES", "AADT"]
@@ -37,6 +38,7 @@ def main():
         predictor.response_var = response_var
         predictor.subset_train_data()
         predictor.split_data(RF_PREDICTOR_VARS, state_fips = None, test_size = 1e-10)
+
         X, y = predictor.X_train, predictor.y_train
 
         # Define the parameter space for the Random Forest
@@ -54,9 +56,10 @@ def main():
         opt = BayesSearchCV(
             estimator=rf,
             search_spaces = param_space,
+            scoring = 'neg_root_mean_squared_error',  # Use RMSE for scoring
             n_iter = NUM_ITERS,
             cv = 3,  # Number of cross-validation folds
-            n_jobs = -1,  # Number of jobs to run in parallel
+            n_jobs = NUM_JOBS,  # Number of jobs to run in parallel
             random_state = 42
         )
 
@@ -78,7 +81,21 @@ def main():
         plt.plot(results['mean_test_score'])
         plt.xlabel('Iteration')
         plt.ylabel('Mean RMSE')
-        plt.title('Bayesian Optimization of Random Forest')
-        
-        # save the plot
-        plt.savefig(f'../../figs/hyperparameter_tuning_{response_var}.png', dpi=300)
+        plt.title(f'Bayes Search for Random Forest- {response_var}')
+        plt.tight_layout()
+        plt.savefig(f'../../figs/hyperparameter_tuning_iter_{response_var}.png', dpi=300)
+
+        # visualize the objective
+        _ = plot_objective(opt.optimizer_results_[0])
+        plt.suptitle(f'Partial Dependence of RMSE on Hyperparameters - {response_var}')
+        plt.tight_layout()
+        plt.savefig(f'../../figs/hyperparameter_tuning_objective_{response_var}.png', dpi=300)
+
+        # visualize the histogram of the parameters
+        _ = plot_histogram(opt.optimizer_results_[0])
+        plt.suptitle(f'Hyperparameter Histogram - {response_var}')
+        plt.tight_layout()
+        plt.savefig(f'../../figs/hyperparameter_tuning_histogram_{response_var}.png', dpi=300)
+
+if __name__ == "__main__":
+    main()
