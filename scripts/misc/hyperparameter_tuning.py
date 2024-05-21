@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from skopt import BayesSearchCV
 from skopt.space import Real, Categorical, Integer
-from skopt.plots import plot_objective, plot_histogram
+from skopt.plots import plot_objective, plot_convergence
 import matplotlib.pyplot as plt
 
 # Get the absolute path of the parent directory
@@ -23,7 +23,7 @@ def main():
     RANDOM_STATE = 42
 
     NUM_ITERS = 48
-    NUM_JOBS = 48
+    NUM_JOBS = -1
     
     RESPONSE_VARS = ['AADT_MDV', 'AADT_HDV']
     RF_PREDICTOR_VARS = ["STATEFP", "COUNTYFP", "F_SYSTEM", "THROUGH_LANES", "AADT"]
@@ -43,9 +43,9 @@ def main():
 
         # Define the parameter space for the Random Forest
         param_space = {
-            'n_estimators': Integer(10, 100),
-            'max_depth': Integer(5, 50),
-            'min_samples_split': Real(0.01, 0.1),
+            'n_estimators': Integer(50, 120),
+            'max_depth': Categorical([None, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]),
+            'min_samples_split': Integer(2, 30),
             'min_samples_leaf': Integer(1, 10),
             'max_features': Categorical([None, 'sqrt', 'log2'])
         }
@@ -74,28 +74,38 @@ def main():
         with open(f'../../log/best_params_{response_var}.txt', 'w') as f:
             f.write(str(opt.best_params_))
 
+
         # show trajectory of search
         results = opt.cv_results_
 
-        # visualize rmse over iterations
-        plt.plot(results['mean_test_score'])
-        plt.xlabel('Iteration')
-        plt.ylabel('Mean RMSE')
-        plt.title(f'Bayes Search for Random Forest- {response_var}')
-        plt.tight_layout()
-        plt.savefig(f'../../figs/hyperparameter_tuning_iter_{response_var}.png', dpi=300)
+        try:
+            # visualize rmse over iterations
+            plt.plot(results['mean_test_score'])
+            plt.xlabel('Iteration')
+            plt.ylabel('Mean RMSE')
+            plt.title(f'Bayes Search for Random Forest- {response_var}')
+            plt.tight_layout()
+            plt.savefig(f'../../figs/hyperparameter_tuning_iter_{response_var}.png', dpi=300)
+        except:
+            print('Error plotting RMSE over iterations')
 
-        # visualize the objective
-        _ = plot_objective(opt.optimizer_results_[0])
-        plt.suptitle(f'Partial Dependence of RMSE on Hyperparameters - {response_var}')
-        plt.tight_layout()
-        plt.savefig(f'../../figs/hyperparameter_tuning_objective_{response_var}.png', dpi=300)
+        try:
+            # visualize the objective
+            obj = plot_objective(opt.optimizer_results_[0])
+            plt.suptitle(f'Partial Dependence of RMSE on Hyperparameters - {response_var}')
+            plt.tight_layout()
+            plt.savefig(f'../../figs/hyperparameter_tuning_objective_{response_var}.png', dpi=300)
+        except:
+            print('Error plotting objective')
 
-        # visualize the histogram of the parameters
-        _ = plot_histogram(opt.optimizer_results_[0])
-        plt.suptitle(f'Hyperparameter Histogram - {response_var}')
-        plt.tight_layout()
-        plt.savefig(f'../../figs/hyperparameter_tuning_histogram_{response_var}.png', dpi=300)
+        try:
+            # visualize convergence
+            conv = plot_convergence(opt.optimizer_results_[0])
+            plt.suptitle(f'Convergence Plot - {response_var}')
+            plt.tight_layout()
+            plt.savefig(f'../../figs/hyperparameter_tuning_convergence_{response_var}.png', dpi=300)
+        except:
+            print('Error plotting convergence')
 
 if __name__ == "__main__":
     main()
