@@ -143,12 +143,12 @@ class AADTPredictor:
         except Exception as e:
             print(f"ERROR: The model could not be initialized. {e}", flush=True)
 
-    def fit_model(self):
+    def fit_model(self, **kwargs):
         """
         Summary: Fit the model to the data
         """
         try:
-            self.model.fit(self.X_train, self.y_train)
+            self.model.fit(self.X_train, self.y_train, **kwargs)
             print("Model trained successfully", flush=True)
         except Exception as e:
             print(f"ERROR: The model could not be trained. {e}", flush=True)

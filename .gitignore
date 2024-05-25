@@ -1,5 +1,6 @@
 *.pkl
 *.csv
 *.pyc
+.DS_Store
 data/processed_data
 data/raw_data
