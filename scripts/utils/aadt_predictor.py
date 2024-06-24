@@ -191,7 +191,7 @@ class AADTPredictor:
         mae_scores = -model_cv["test_neg_mean_absolute_error"]
         mse_scores = -model_cv["test_neg_mean_squared_error"]
 
-        return r2_scores, mae_scores, mse_scores
+        return {"r2": r2_scores, "mae": mae_scores, "mse": mse_scores}
 
     def hyperparameter_tuning(self, param_grid, n_splits):
         """
