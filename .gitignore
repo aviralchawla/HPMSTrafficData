@@ -1,6 +1,7 @@
 *.pkl
 *.csv
 *.pyc
+*.out
 .DS_Store
 data/processed_data
 data/raw_data
