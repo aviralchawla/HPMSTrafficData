@@ -21,6 +21,19 @@ The methodology used in this project is as follows:
 ## Usage
 To run the scripts, you need to have the following dependencies installed:
 
+
+# Raw Data
+python download_raw_data.py
+python compile_raw_data.py
+
+# HPMS
+python subset_hpms.py
+python impute_hpms.py
+python joingeo_hpms.py
+
+# Traffic Density
+python compile_traffic_den
+
 ## Contributing
 To contribute to this project, you need to follow the following steps:
 
@@ -30,6 +43,3 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ## Acknowledgements
 This project is supported by the Transportation Research Center at the University of Vermont.
 
-### To-Dos:
-- Re-run pipeline
-- Bug fixes
