@@ -19,16 +19,16 @@ The data used in this project is the Highway Performance Monitoring System (HPMS
 The methodology used in this project is as follows:
 
 # Raw Data
-python download_raw_data.py
-python compile_raw_data.py
+python download_raw_data.py <br>
+python compile_raw_data.py <br>
 
 # HPMS
-python subset_hpms.py
-python impute_hpms.py
-python joingeo_hpms.py
+python subset_hpms.py <br>
+python impute_hpms.py <br>
+python joingeo_hpms.py <br>
 
 # Traffic Density
-python compile_traffic_den
+python compile_traffic_density.py <br>
 
 ## Usage
 To run the scripts, you need to have the following dependencies installed:
