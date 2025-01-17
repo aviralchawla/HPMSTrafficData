@@ -13,14 +13,10 @@ To get started with this project, you need to follow the following steps:
 3. `powershell -File 'setup.ps1'`
 
 ## Data Source
-The data used in this project is the HPMS data, which is available at the [??](). The data is available in the form of a geodatabase file, which are organized by state and year.
+The data used in this project is the Highway Performance Monitoring System (HPMS) data, which, in its most recent version is available at the USDOT Bureau of Transportation Statistics (https://geodata.bts.gov/datasets/c199f2799b724ffbacf4cafe3ee03e55/about). The data used in this project (HPMS 2018) is available in the form of a geodatabase file organized by state and year.
 
 ## Methodology
 The methodology used in this project is as follows:
-
-## Usage
-To run the scripts, you need to have the following dependencies installed:
-
 
 # Raw Data
 python download_raw_data.py
@@ -33,6 +29,9 @@ python joingeo_hpms.py
 
 # Traffic Density
 python compile_traffic_den
+
+## Usage
+To run the scripts, you need to have the following dependencies installed:
 
 ## Contributing
 To contribute to this project, you need to follow the following steps:
