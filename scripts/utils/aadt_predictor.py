@@ -184,7 +184,7 @@ class AADTPredictor:
             self.y_train,
             cv=cv,
             scoring=("r2", "neg_mean_absolute_error", "neg_mean_squared_error"),
-            return_estimator=True,
+            # return_estimator=True,
             n_jobs=-1,
         )
         r2_scores = model_cv["test_r2"]
